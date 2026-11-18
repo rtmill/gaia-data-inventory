@@ -1,0 +1,31 @@
+name: Suggest a dataset
+description: Point us at a public place-based dataset that isn't in the inventory yet (no Claude Code needed).
+title: "[suggest] <dataset name>"
+labels: ["suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: "Check first that it isn't already on the [Data Inventory](https://ohdsi.github.io/GIS/inventory.html) page. A contributor will check the page and add it as a row (packet a)."
+  - type: input
+    id: url
+    attributes:
+      label: Landing page or DOI
+      description: The publisher's own page, or the dataset's DOI.
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Dataset name and publisher
+    validations:
+      required: true
+  - type: input
+    id: unit
+    attributes:
+      label: Finest spatial unit, if you know it
+      placeholder: "e.g. census tract, ZCTA, LSOA, 1 km grid, facility points"
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters for health research
+      description: A use case, a study, or a working-group request it answers.

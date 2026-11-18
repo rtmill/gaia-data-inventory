@@ -1,0 +1,27 @@
+{
+ "asof": "2026-11-18",
+ "rows": 805,
+ "tiers": {
+  "Gold": 157,
+  "Silver": 471,
+  "Bronze": 105,
+  "Browser needed": 20,
+  "Failed": 29
+ },
+ "verified": 628,
+ "file_verified": 15,
+ "with_schema": 35,
+ "with_key_vintage": 10,
+ "ledger_files": 0,
+ "contributors": [],
+ "open_batches": {
+  "bronze-reads": 11,
+  "browser-needed": 3,
+  "candidates": 28,
+  "failed-successors": 2,
+  "recipe-ready": 10,
+  "silver-open": 10
+ },
+ "candidate_families_open": 276,
+ "candidates_ruled_out": 0
+}

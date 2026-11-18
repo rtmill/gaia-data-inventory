@@ -1,0 +1,86 @@
+id,route,n_columns,key_column,system,level,vintage,vintage_basis,geometry_kind,crs,years_found,status
+us_ahrq_sdoh_database,page,0,,,,,,,,,refused
+au_abs_census_datapacks,page,4,<LEVEL>_CODE_<YEAR>,ASGS,,2016,"column name STE_CODE_2016 in the page example (2016 pack); 2021 packs presumably carry _2021, not shown",reference,,2016; 2021,partial
+be_statbel_statistical_sectors,page,0,"statistical sector code (column name in a separate xlsx, not read)",national statistical code,small_area,2023,page text: 'statistical sectors of Belgium on 01/01/2023',embedded,EPSG:31370 (Belgian Lambert 1972) or EPSG:3812 (Belgian Lambert 2008),2023,partial
+es_ine_secciones_censales,page,0,,,small_area,,,embedded,UTM zone 30 (datum not stated on the page),2001-2025,partial
+eu_eurostat_gisco_postal_codes,page,0,,ZIP code,postcode,2024,download form offers Year 2024 or 2020; 'ZIP code' is the vocabulary term used for a postal code (the vocabulary has no EU postcode term),embedded,"EPSG:3035, 4326 or 3857 (choice on the download form)",2020; 2024,partial
+fr_insee_iris_rp,page,0,"IRIS code (column name in the variable dictionary, not in page text)",national statistical code,small_area,2025-01-01,page text: 2023 data published on the geography in force on 1 January 2025,none,,2023,partial
+gb_scotgov_simd,page,0,,,,,,,,,refused
+global_acag_pm25,page,0,,grid,raster,,,embedded,,,partial
+global_dlr_wsf_2019,stac,1,,grid,raster,,,embedded,EPSG:4326 (cube:dimensions reference_system 4326; CRS84 in crs),2019,partial
+global_esa_cci_soil_moisture,page,0,,,,,,,,,no_schema
+global_google_open_buildings,page,6,"latitude, longitude (or full_plus_code)",coordinates,point,,,embedded,,,schema
+global_meta_hrsl_population,ckan,0,,grid,raster,,,embedded,,,partial
+global_microsoft_building_footprints,page,2,,,polygon,,,embedded,,,partial
+global_noaa_ghcn_daily,page,13,ID,non-geographic ID,point,,,reference,,,schema
+global_smithsonian_global_volcanism,page,0,,,,,,,,,refused
+global_zenodo_daytime_suhi_6022_cities_2019,zenodo,5,coordinates (column names not stated),coordinates,point,,,embedded,,2019,partial
+hdx_ethiopia_market_centers,ckan,0,pcode (admin pcodes added by HDX),OCHA P-code,point,2024,description text: combined with OCHA administrative boundaries of 2024 to add woredas and pcodes,embedded,,2025,partial
+hdx_venezuela_earthquake_hazardous_facilities,ckan,0,,,point,,,embedded,,2026,partial
+mekong_odm_health_facilities_in_thailand_2020,ckan,8,"Lat, Long",coordinates,point,,,embedded,,2020,schema
+nl_cbs_100m_grid,page,0,,grid,grid_100m,,,embedded,,2024,partial
+se_scb_deso,page,0,,national statistical code,small_area,2025,page text: a new version of DeSO was published at the beginning of 2025; boundaries 'current' = 2025-01-01,embedded,,2025,partial
+us_cdc_usaleep,page,7,Tract ID,GEOID/FIPS,tract,2010,record layout: 'Census 2010 FIPS State/County/Tract code',none,,,schema
+us_census_cartographic_boundary,page,0,,,,,,,,,no_schema
+us_census_decennial_pl94171,census,335,"for/in FIPS clause (state, county, tract, block group, block)",GEOID/FIPS,block,2020,geography.json referenceDate 2020-01-01,reference,,2020,schema
+us_census_gazetteer,page,9,GEOID,GEOID/FIPS,tract,,,none,,,schema
+us_census_lehd_lodes,page,0,,,,,,,,,no_schema
+us_census_urban_rural,page,10,GEOID,GEOID/FIPS,block,2020,"field descriptions: '2020 Census block', 'six digit 2020 Census Tract code'",none,,2020,schema
+us_census_zcta,none,0,,,,,,,,,no_schema
+us_climatologylab_gridmet,none,0,,,,,,,,,no_schema
+us_fcc_broadband_data_collection,none,0,,,,,,,,,no_schema
+us_fnai_florida_managed_areas,none,0,,,,,,,,,no_schema
+us_hud_qct_dda,refused,0,,,,,,,,,refused
+us_noaa_hms_smoke_fire,none,0,,,,,,,,,no_schema
+us_noaa_us_climate_normals,none,0,,,,,,,,,no_schema
+us_treasury_opportunity_zones,none,0,,,,,,,,,no_schema
+us_um_gdsc_mdc_derived_layers,none,0,,,,,,,,,no_schema
+us_usda_ers_atlas_rural_small_town,none,0,,,,,,,,,no_schema
+us_usda_fns_snap_retailers,none,0,,,,,,,,,no_schema
+us_usgs_usmin_mines,none,0,,,,,,,,,no_schema
+ar_indec_radios_censales,none,0,,,,,,,,,no_schema
+au_abs_asgs_boundaries,none,0,,,,,,,,,no_schema
+ca_statcan_census_boundary_files_2021,ckan,0,"DGUID (also UID, PRUID)",StatCan SGC/DGUID,,2021,"description text (""UID, DGUID, name and type... land area"") and record title ""2021 Census - Boundary files""",embedded,NAD83 / Lambert conformal conic (description text; no EPSG code),2021,partial
+eu_copernicus_effis,none,0,,,,,,,,,no_schema
+eu_eea_industrial_reporting_eprtr,repo_api,0,,,,,,none,EPSG:4326,2007-2021,partial
+eu_eea_natura2000,none,0,,,,,,,,,no_schema
+fr_datagouv_qualit_de_l_air_de_l_eau_et_potentiel_radon_par_commune,repo_api,13,code_insee,LAU,lau,,,none,,2026,schema
+gaia_bogota_2019_estratos_manzana_dane,ckan,0,,,small_area,,,embedded,,,partial
+gb_mhclg_imd_england,none,0,,,,,,,,,no_schema
+global_ciesin_povmap_small_area_poverty_inequality,dataverse,0,,,,,,embedded,,1990-2002,partial
+global_ciesin_povmap_subnational_child_malnutrition,dataverse,0,,,,,,embedded,,1990-2002,partial
+global_ciesin_povmap_subnational_infant_mortality,dataverse,0,,,,,,embedded,,2000-2000,partial
+global_esa_worldcover,none,0,,,,,,,,,no_schema
+global_geoboundaries,repo_api,0,,geoBoundaries,country,,,embedded,,,partial
+global_geofabrik_osm_extracts,none,0,,,,,,,,,no_schema
+global_geonames,none,0,,,,,,,,,no_schema
+global_geonames_postal_codes,none,0,,,,,,,,,no_schema
+global_overture_maps,none,0,,,,,,,,,no_schema
+global_whos_on_first,none,0,,,,,,,,,no_schema
+global_worldbank_global_electrification_grid_map,none,0,,,,,,,,,no_schema
+global_worldpop_population_100m,repo_api,0,,grid,raster,,,embedded,,2000-2020,partial
+global_worldpop_population_1km,repo_api,0,,grid,raster,,,embedded,,2000-2020,partial
+mekong_odm_health_facilities_in_mekong_countries_2020,ckan,7,geometry,embedded geometry,,,,embedded,epsg:4326,2020,schema
+us_bts_ntad,arcgis,0,,,,,,,,,no_schema
+us_ca_oehha_calenviroscreen,ckan,59,Census Tract,GEOID/FIPS,tract,,,reference,,,schema
+us_census_tiger_line,none,0,,,,,,,,,no_schema
+us_census_tiger_line_county,none,0,,,,,,,,,no_schema
+us_com_comission_districts,arcgis,11,COMDISTID,non-geographic ID,polygon,,,embedded,EPSG:3857 (wkid 102100),,schema
+us_eia_energy_atlas,arcgis,0,,,,,,,,,no_schema
+us_epa_brownfields_acres_cimc,none,0,,,,,,,,,no_schema
+us_epa_enviroatlas_community,none,0,,,,,,,,,no_schema
+us_epa_enviroatlas_national,none,0,,,,,,,,,no_schema
+us_fema_firm_flood_insurance_rate_maps,none,0,,,,,,,,,no_schema
+us_fema_nfhl,none,0,,,,,,,,,no_schema
+us_fema_openfema_disaster_declarations,repo_api,29,fipsStateCode + fipsCountyCode,GEOID/FIPS,county,,,none,,,schema
+us_fhwa_hpms,none,0,,,,,,,,,no_schema
+us_hrsa_hpsa_mua,none,0,,,,,,,,,no_schema
+us_hud_picture_of_subsidized_households,none,0,,,,,,,,,no_schema
+us_ndmc_us_drought_monitor,none,0,,,,,,,,,no_schema
+us_nws_heatrisk,none,0,,,,,,,,,no_schema
+us_uidaho_maca,none,0,,,,,,,,,no_schema
+us_usda_ers_food_environment_atlas,none,0,,,,,,,,,no_schema
+us_usda_naip,refused,0,,,,,,,,,refused
+us_usgs_3dep,none,0,,,,,,,,,no_schema
+us_usgs_lcmap,none,0,,,,,,,,,no_schema
+us_usgs_padus,none,0,,,,,,,,,no_schema

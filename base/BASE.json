@@ -1,0 +1,14 @@
+{
+ "asof": "2026-11-18",
+ "file": "inventory-base.csv",
+ "source": "Gaia workspace docs/discovery/inventory-combined-2026-11-18-p7c.csv (iterations 0-25; see method/iterations/)",
+ "sha256": "8e42b0572de8053ebfde9b694b582b475013cdc0b0ea521f2d32280353ae7069",
+ "rows": 805,
+ "other_files": {
+  "history.json": "tier of each dataset at each of the 13 saved masters before the ledger (for the site's growth chart)",
+  "candidate-families.csv": "277 DataCite candidate families not yet checked (from iteration #22's queue, minus the 200 it enriched)",
+  "candidates-datacite-2026-10-29.csv": "the full unvalidated DataCite candidate list (iteration #12), for reference",
+  "verified-columns.txt": "column list of the old staging list (superseded by build/inventory-verified.csv)"
+ },
+ "line_endings": "LF"
+}

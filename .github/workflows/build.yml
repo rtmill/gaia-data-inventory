@@ -1,0 +1,43 @@
+name: Build inventory
+
+# On every change to main: replay base + ledger into build/, commit it, then open and close batch issues.
+# If main is protected by a ruleset, add a deploy key with write access as a bypass actor and store its private key
+# as the DEPLOY_KEY secret; without that secret the default token is used.
+on:
+  push:
+    branches: [main]
+    paths: ["ledger/**", "base/**", "scripts/**", "method/unit-vocabulary.csv", ".github/workflows/build.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: build-main
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python scripts/build.py
+      - name: Commit build/
+        run: |
+          if [ -n "$(git status --porcelain build README.md)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add build README.md
+            git commit -m "Build: replay ledger"
+            git push
+          fi
+      - name: Batch issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/sync_issues.py --max-new 20

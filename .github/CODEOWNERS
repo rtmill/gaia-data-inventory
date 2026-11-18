@@ -1,0 +1,9 @@
+# Contributions (ledger/) need no review: CI validates them.
+# Everything that changes the rules, the base or the published output needs a maintainer.
+/base/       @rtmill
+/scripts/    @rtmill
+/method/     @rtmill
+/site/       @rtmill
+/.claude/    @rtmill
+/.github/    @rtmill
+/CLAUDE.md   @rtmill

@@ -1,0 +1,48 @@
+name: Release snapshot to OHDSI/GIS
+
+# Manual only. Pushes a branch with the snapshot to the maintainer's fork of OHDSI/GIS and prints the link to open the PR.
+# Nothing reaches OHDSI/GIS until a person opens that PR and someone merges it there.
+# Needs: GIS_FORK (e.g. rtmill/GIS) as a repository variable, and GIS_FORK_TOKEN, a fine-grained token with
+# Contents: read and write on that fork only.
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "One line for the PR description (what changed since the last release)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: build/ is current
+        run: python scripts/build.py --check
+      - run: python scripts/export_gis.py "$RUNNER_TEMP/export"
+      - name: Branch on the fork
+        env:
+          FORK: ${{ vars.GIS_FORK }}
+          TOKEN: ${{ secrets.GIS_FORK_TOKEN }}
+          NOTE: ${{ github.event.inputs.note }}
+        run: |
+          test -n "$FORK" && test -n "$TOKEN" || { echo "Set the GIS_FORK variable and GIS_FORK_TOKEN secret first"; exit 1; }
+          ASOF=$(python -c "import json;print(json.load(open('build/STATE.json'))['asof'])")
+          BR="inventory-$ASOF-${GITHUB_RUN_NUMBER}"
+          git clone --depth 1 https://github.com/OHDSI/GIS.git gis
+          cd gis
+          git switch -c "$BR"
+          cp -r "$RUNNER_TEMP/export/." .
+          git config user.name "rtmill"
+          git config user.email "rtmiller645@gmail.com"
+          git add -A exploration/place-data-inventory rmd/data/inventory.json rmd/data/inventory-history.json rmd/inventory.Rmd rmd/assets/inventory.js
+          git commit -m "Data inventory snapshot ($ASOF)"
+          git push "https://x-access-token:${TOKEN}@github.com/${FORK}.git" "$BR"
+          echo "### Open the PR" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://github.com/OHDSI/GIS/compare/main...${FORK%%/*}:GIS:${BR}?expand=1" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Note: %s\n' "$NOTE" >> "$GITHUB_STEP_SUMMARY"
