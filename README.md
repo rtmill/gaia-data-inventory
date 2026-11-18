@@ -12,14 +12,20 @@ Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/invent
 
 ## Contribute
 
-There is one queue of open work. You look at it, slice it how you like, see what each kind costs, and take as much as you want:
+You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert). There is one queue of open work; you choose what and how much to take.
 
-```bash
-git clone https://github.com/rtmill/gaia-data-inventory && cd gaia-data-inventory
-claude          # then type:  /inventory
-```
+1. **Clone and start Claude Code** (Sonnet is enough):
+   ```bash
+   git clone https://github.com/rtmill/gaia-data-inventory && cd gaia-data-inventory
+   git switch -c work/<your-handle>
+   claude
+   ```
+2. **Type `/inventory`.** Claude shows the queue: each kind of work, how many items are open, and what one item costs in minutes and tokens (from earlier runs). Tell it which kind and how much you want: a number of items, or a time or token budget. You can narrow by region, topic, publisher or site.
+3. **Claim it.** When you agree to the list, Claude opens a GitHub issue titled `[claim] …`, assigned to you, listing your items. That is the claim: those items are hidden from everyone else until the issue closes.
+4. **Claude does the work** and writes one file under `ledger/`.
+5. **Open a pull request** with `Closes #<your claim issue>` (Claude offers to do this). Checks run automatically; when they're green, merge it. The inventory rebuilds itself, your claim closes, and anything you didn't finish goes back to the queue.
 
-Details in [CONTRIBUTING.md](CONTRIBUTING.md). Suggesting a dataset without Claude Code: [open an issue](../../issues/new?template=suggest-dataset.yml).
+Just looking, without Claude: `python scripts/queue.py` (add `--help` for slicing and claiming by hand). More detail, the rules, and what to do if a check fails: [CONTRIBUTING.md](CONTRIBUTING.md). Suggesting a dataset without any of this: [open an issue](../../issues/new?template=suggest-dataset.yml).
 
 ## How it works
 
