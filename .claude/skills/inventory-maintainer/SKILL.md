@@ -32,8 +32,14 @@ Nothing goes to GIS without a maintainer's explicit go.
 3. Without the workflow: `python scripts/export_gis.py /tmp/gis-export`, copy it into a GIS clone on a new branch from `origin/main`, review `git diff --stat`, commit as `rtmill <rtmiller645@gmail.com>`, push, `gh pr create -R OHDSI/GIS`. Use `Refs OHDSI/gaiaCatalog#N` one per line (a bare `#N` links GIS issues).
 4. Merge in GIS: the site rebuilds on merge.
 
+## Contracts with OHDSI/GIS (don't break these)
+
+- **`rmd/data/inventory.json` is read by GIS's own `scripts/link_use_cases.py`** (Jared, 2026-11-07), which matches use-case data needs to inventory rows by `id`, `th` (themes), `u` (unit) and `rg` (region) during the GIS site build. Keep those keys and their meaning stable in `build.py`; a change there needs a heads-up to Jared and a matching GIS change.
+- **`site/inventory.Rmd` and `site/inventory.js` are copies of the GIS page.** People edit the page in GIS too (Jared did on 2026-11-17). Before each release, diff `site/` against GIS `main` and take their edits into `site/` first, or the release reverts them.
+
 ## Rebuild and checks
 
 - `python scripts/build.py` rebuilds `build/` and the README state block; `--check` fails if `build/` is stale.
 - `python scripts/validate.py --changed --against origin/main` checks the branch's ledger files.
-- `python scripts/sync_issues.py --dry-run` shows which batch issues would be opened or closed.
+- `python scripts/sync_issues.py --dry-run` shows which claim issues would be closed or nudged.
+- **Estimates:** `method/estimates.csv` holds the per-item figures measured on earlier runs; `queue.py` switches a kind to the median of real sessions once `build/effort.csv` has three. Update the file when a big run gives a better figure, with its basis.

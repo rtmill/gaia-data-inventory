@@ -102,7 +102,7 @@ def apply_file(rows, cols, path, recs=None):
     date = file_date(path)
     moves, retier = [], set()
     for x in recs:
-        if is_candidate_verdict(x):
+        if is_candidate_verdict(x) or "meta" in x:   # verdicts and the session's effort line change no row
             continue
         i = x["id"]
         if x.get("new"):

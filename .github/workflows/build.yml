@@ -1,6 +1,6 @@
 name: Build inventory
 
-# On every change to main: replay base + ledger into build/, commit it, then open and close batch issues.
+# On every change to main: replay base + ledger into build/, commit it, then tidy claim issues.
 # If main is protected by a ruleset, add a deploy key with write access as a bypass actor and store its private key
 # as the DEPLOY_KEY secret; without that secret the default token is used.
 on:
@@ -37,7 +37,7 @@ jobs:
             git commit -m "Build: replay ledger"
             git push
           fi
-      - name: Batch issues
+      - name: Tidy claim issues
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/sync_issues.py --max-new 20
+        run: python scripts/sync_issues.py

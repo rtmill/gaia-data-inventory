@@ -7,7 +7,8 @@
 Outputs (all generated; never edit by hand):
   build/inventory-all.csv          every dataset, every check, detail and evidence
   build/inventory-verified.csv     Gold + Silver, in the readable staging-list columns
-  build/queues/*.csv               work for contributors, in stable batches (build/batches.json)
+  build/queue.csv                  every open item of work, one line each (slice and carve it with scripts/queue.py)
+  build/effort.csv                 what contributors' sessions took (feeds the estimates)
   build/candidates-rejected.csv    candidate families ruled out by contributors (so they don't come back)
   build/site/inventory.json        data for the Data Inventory page on the OHDSI GIS site
   build/site/inventory-history.json
@@ -59,74 +60,6 @@ VER = [("id", lambda r: r["id"]), ("tier", lambda r: r["verify_tier"]), ("title"
 ver = [{k: f(r) for k, f in VER} for r in rows if r["verify_tier"] in ("Gold", "Silver") and r.get("round") != "2-pilot"]
 put("build/inventory-verified.csv", csv_text(ver, [k for k, _ in VER]))
 
-# ---- queues, in stable batches ----
-CORE = ("chk_license", "chk_unit", "chk_temporal", "chk_access", "chk_join_key", "chk_format_gaia")
-SET = ("pass", "warn", "fail", "n.a.")
-live = [r for r in rows if r.get("round") != "2-pilot"]
-Q = {  # queue: (prefix, batch size, packet, rows in order)
-    "bronze-reads": ("BR", 10, "b", [r for r in live if r["verify_tier"] == "Bronze" and r.get("url_health") != "blocked"]),
-    "silver-open": ("SO", 10, "b", [r for r in live if r["verify_tier"] == "Silver"
-                                    and sum(r[c] in ("pass", "warn", "fail") for c in ("chk_license", "chk_unit", "chk_temporal", "chk_access")) <= 2]),
-    "failed-successors": ("FS", 10, "b", [r for r in live if r["verify_tier"] == "Failed" and r.get("successor_verdict") in ("", "unresolved")]),
-    "recipe-ready": ("RR", 5, "c", sorted([r for r in live if r["verify_tier"] in ("Gold", "Silver") and not r.get("verification_level", "").startswith("file")
-                                           and not r.get("schema_source") and all(r[c] == "pass" for c in ("chk_license", "chk_access", "chk_join_key", "chk_format_gaia"))],
-                                          key=lambda r: (r.get("wg_request") == "", r["verify_tier"] != "Gold", r["id"]))),
-    "browser-needed": ("BN", 10, "d", [r for r in live if r["verify_tier"] == "Browser needed" or (r["verify_tier"] == "Bronze" and r.get("url_health") == "blocked")]),
-}
-# candidate families (packet e): drop families already in the inventory (any DOI in any field) or ruled out in the ledger
-fam = list(csv.DictReader(open(os.path.join(inv.ROOT, "base", "candidate-families.csv"), encoding="utf-8-sig")))
-inv_dois = set()
-for r in rows:
-    inv_dois |= inv.all_dois(" ".join(r.get(k, "") for k in ("persistent_id", "site_url", "access_url", "evidence_url", "notes", "partB_pages_read", "schema_source")))
-ruled = {inv.norm_doi(v["candidate"]): v for v in verdicts}
-fam_open = [f for f in fam if not (inv.all_dois(f["all_dois"] or f["doi"]) & (inv_dois | set(ruled)))]
-fam_open.sort(key=lambda f: int(f["rank"] or 9999))
-
-bpath = os.path.join(inv.ROOT, "build", "batches.json")
-B = json.load(open(bpath, encoding="utf-8")) if os.path.exists(bpath) else {"next": {}, "batches": {}}
-claimed = {}   # batch id -> first ledger file that names it
-for f in files:
-    for x in inv.read_records(f):
-        if x.get("batch"):
-            claimed.setdefault(x["batch"], os.path.basename(f))
-qual = {q: [r["id"] for r in rs] for q, (_, _, _, rs) in Q.items()}
-qual["candidates"] = [inv.norm_doi(f["doi"]) for f in fam_open]
-size = {q: v[1] for q, v in Q.items()}
-size["candidates"] = 10
-prefix = {q: v[0] for q, v in Q.items()}
-prefix["candidates"] = "CA"
-for bid, b in B["batches"].items():
-    if b["status"] != "open":
-        continue
-    if bid in claimed:
-        b.update(status="done", done_in=claimed[bid])
-        continue
-    b["ids"] = [i for i in b["ids"] if i in set(qual.get(b["queue"], []))]
-    if not b["ids"]:
-        b.update(status="done", done_in="settled elsewhere")
-for q, ids in qual.items():   # a row can sit in two queues (e.g. silver-open and recipe-ready): batches are per queue
-    in_open = {i for b in B["batches"].values() if b["status"] == "open" and b["queue"] == q for i in b["ids"]}
-    pool = [i for i in ids if i not in in_open]
-    for k in range(0, len(pool), size[q]):
-        n = B["next"].get(prefix[q], 1)
-        B["next"][prefix[q]] = n + 1
-        B["batches"][f"{prefix[q]}-{n:02d}"] = {"queue": q, "ids": pool[k:k + size[q]], "status": "open"}
-put("build/batches.json", json.dumps(B, indent=1, sort_keys=True) + "\n")
-
-hint = lambda r: " ".join((r.get("browser_pass_note") or r.get(inv.NOTE) or r.get("notes") or "").split())[:200]
-openc = lambda r: ";".join(c[4:] for c in CORE if r.get(c, "") not in SET)
-batch_of = {(b["queue"], i): bid for bid, b in B["batches"].items() if b["status"] == "open" for i in b["ids"]}
-for q, (_, _, pk, rs) in Q.items():
-    out = [{"batch": batch_of.get((q, r["id"]), ""), "packet": pk, "id": r["id"], "verify_tier": r["verify_tier"], "dataset_name": r["dataset_name"],
-            "organization": r["organization"], "site_url": r["site_url"], "open_checks": openc(r), "hint": hint(r)} for r in rs]
-    put(f"build/queues/{q}.csv", csv_text(sorted(out, key=lambda x: (x["batch"], x["id"])), list(out[0].keys()) if out else ["batch", "id"]))
-fd = {inv.norm_doi(f["doi"]): f for f in fam_open}
-cand = [{"batch": batch_of.get(("candidates", d), ""), "packet": "e", "doi": f["doi"], "title": f["title"], "publisher": f["publisher"], "year": f["year"],
-         "anchors": f["anchors"], "region": f["region"], "siblings": f["n"], "all_dois": f["all_dois"]} for d, f in fd.items()]
-put("build/queues/candidates.csv", csv_text(sorted(cand, key=lambda x: (x["batch"], x["doi"])), list(cand[0].keys()) if cand else ["batch", "doi"]))
-rej = [{"doi": v["candidate"], "verdict": v.get("verdict", ""), "reason": v.get("reason", ""), "by": v.get("by", ""), "file": v["_file"]} for v in verdicts]
-put("build/candidates-rejected.csv", csv_text(rej, ["doi", "verdict", "reason", "by", "file"]))
-
 # ---- site data (same shape the GIS page's inventory.js reads) ----
 CH = ["chk_link_live", "chk_license", "chk_temporal", "chk_recency", "chk_unit", "chk_access", "chk_join_key", "chk_format_gaia"]
 
@@ -163,22 +96,61 @@ cur = {r["id"] for r in rows}
 put("build/site/inventory-history.json", json.dumps({"cat": H["cat"], "iterations": H["iterations"], "since": H["since"], "snaps": snaps,
                                                     "t": {i: v for i, v in sorted(codes.items()) if i in cur}}, ensure_ascii=False, separators=(",", ":")))
 
+# ---- the queue: every open item, one line each (scripts/queue.py slices it and carves claims from it) ----
+CORE = ("chk_license", "chk_unit", "chk_temporal", "chk_access", "chk_join_key", "chk_format_gaia")
+SET = ("pass", "warn", "fail", "n.a.")
+live = [r for r in rows if r.get("round") != "2-pilot"]
+touched = Counter(x["id"] for f in files for x in inv.read_records(f) if x.get("id"))
+KINDS = {  # kind: (packet, rows)
+    "read": ("b", [r for r in live if r["verify_tier"] == "Bronze" and r.get("url_health") != "blocked"]),
+    "settle": ("b", [r for r in live if r["verify_tier"] == "Silver"
+                     and sum(r[c] in ("pass", "warn", "fail") for c in ("chk_license", "chk_unit", "chk_temporal", "chk_access")) <= 2]),
+    "successor": ("b", [r for r in live if r["verify_tier"] == "Failed" and r.get("successor_verdict") in ("", "unresolved")]),
+    "schema": ("c", [r for r in live if r["verify_tier"] in ("Gold", "Silver") and not r.get("verification_level", "").startswith("file")
+                     and not r.get("schema_source") and all(r[c] == "pass" for c in ("chk_license", "chk_access", "chk_join_key", "chk_format_gaia"))]),
+    "person-read": ("d", [r for r in live if r["verify_tier"] == "Browser needed" or (r["verify_tier"] == "Bronze" and r.get("url_health") == "blocked")]),
+}
+hint = lambda r: " ".join((r.get("browser_pass_note") or r.get(inv.NOTE) or r.get("notes") or "").split())[:200]
+QC = ["kind", "item", "packet", "tier", "title", "publisher", "host", "region", "category", "wg_request", "open_checks", "touched", "hint"]
+queue = []
+for kind, (pk, rs) in KINDS.items():
+    for r in rs:
+        queue.append({"kind": kind, "item": r["id"], "packet": pk, "tier": r["verify_tier"], "title": r["dataset_name"], "publisher": r["organization"],
+                      "host": host(r.get("site_url")), "region": reg(r), "category": (r.get("categories") or r.get("category") or "Other").split(";")[0].strip(),
+                      "wg_request": r.get("wg_request", ""), "open_checks": ";".join(c[4:] for c in CORE if r.get(c, "") not in SET),
+                      "touched": str(touched.get(r["id"], 0)), "hint": hint(r)})
+# candidate families: drop those already in the inventory (any DOI in any field) or ruled out in the ledger
+fam = list(csv.DictReader(open(os.path.join(inv.ROOT, "base", "candidate-families.csv"), encoding="utf-8-sig")))
+inv_dois = set()
+for r in rows:
+    inv_dois |= inv.all_dois(" ".join(r.get(k, "") for k in ("persistent_id", "site_url", "access_url", "evidence_url", "notes", "partB_pages_read", "schema_source")))
+ruled = {inv.norm_doi(v["candidate"]) for v in verdicts}
+fam_open = [f for f in fam if not (inv.all_dois(f["all_dois"] or f["doi"]) & (inv_dois | ruled))]
+for f in sorted(fam_open, key=lambda f: int(f["rank"] or 9999)):
+    queue.append({"kind": "candidate", "item": f["doi"], "packet": "e", "tier": "", "title": f["title"], "publisher": f["publisher"],
+                  "host": f["doi"].split("/")[0], "region": f["region"], "category": f["anchors"].split(";")[0], "wg_request": "",
+                  "open_checks": "", "touched": "0", "hint": f"{f['n']} DOI(s) in the family; {f['year']}"})
+put("build/queue.csv", csv_text(queue, QC))
+rej = [{"doi": v["candidate"], "verdict": v.get("verdict", ""), "reason": v.get("reason", ""), "by": v.get("by", ""), "file": v["_file"]} for v in verdicts]
+put("build/candidates-rejected.csv", csv_text(rej, ["doi", "verdict", "reason", "by", "file"]))
+# effort actually spent, from the "meta" line contributors' sessions add to their ledger files
+eff = [dict(x["meta"], file=os.path.basename(f)) for f in files for x in inv.read_records(f) if "meta" in x]
+put("build/effort.csv", csv_text(eff, ["file", "by", "kind", "items", "minutes", "fetches", "tokens"]))
+
 # ---- state ----
 c = inv.counts(rows)
-ob = Counter(b["queue"] for b in B["batches"].values() if b["status"] == "open")
+ob = Counter(q["kind"] for q in queue)
 contributors = sorted({x.get("by") for f in files for x in inv.read_records(f) if x.get("by")})
 state = {"asof": asof, "rows": len(rows), "tiers": c, "verified": c["Gold"] + c["Silver"],
          "file_verified": sum(1 for r in rows if r.get("verification_level", "").startswith("file-verified")),
          "with_schema": sum(1 for r in rows if r.get("schema_source")), "with_key_vintage": sum(1 for r in rows if r.get("place_key_vintage")),
-         "ledger_files": len(files), "contributors": contributors, "open_batches": dict(sorted(ob.items())),
-         "candidate_families_open": len(fam_open), "candidates_ruled_out": len(rej)}
+         "ledger_files": len(files), "contributors": contributors, "queue": dict(sorted(ob.items())), "candidates_ruled_out": len(rej)}
 put("build/STATE.json", json.dumps(state, indent=1) + "\n")
 block = (f"**As of {asof}:** {state['rows']} datasets assessed, **{state['verified']} verified** (Gold {c['Gold']}, Silver {c['Silver']}), "
          f"Bronze {c['Bronze']}, Browser needed {c['Browser needed']}, Failed {c['Failed']}. {state['file_verified']} file-verified; "
          f"{state['with_schema']} with a schema record; {state['with_key_vintage']} state their place-key vintage.\n\n"
-         f"**Open work:** " + ", ".join(f"{n} {q} batch{'es' if n != 1 else ''}" for q, n in state["open_batches"].items())
-         + f"; {state['candidate_families_open']} candidate families not yet checked. "
-         f"**Ledger:** {len(files)} contribution file{'s' if len(files) != 1 else ''}"
+         f"**Open queue ({len(queue)} items):** " + ", ".join(f"{n} {k}" for k, n in state["queue"].items())
+         + f". Slice it with `python scripts/queue.py`. **Ledger:** {len(files)} contribution file{'s' if len(files) != 1 else ''}"
          + (f" from {len(contributors)} contributor{'s' if len(contributors) != 1 else ''}." if contributors else "."))
 rp = os.path.join(inv.ROOT, "README.md")
 readme = open(rp, encoding="utf-8").read()
@@ -194,7 +166,7 @@ for p, text in OUT.items():
         if not CHECK:
             os.makedirs(os.path.dirname(p), exist_ok=True)
             open(p, "w", encoding="utf-8", newline="").write(text)
-print(f"{len(rows)} rows, {len(files)} ledger files; tiers {c}; open batches {dict(ob)}; candidate families {len(fam_open)}")
+print(f"{len(rows)} rows, {len(files)} ledger files; tiers {c}; queue {dict(ob)}")
 if CHECK and stale:
     print("out of date:", ", ".join(stale))
     sys.exit(1)

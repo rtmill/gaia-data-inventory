@@ -71,6 +71,11 @@ for path in paths:
     seen = set()
     for x in recs:
         n = x["_line"]
+        if "meta" in x:                          # the session's effort line
+            m = x["meta"]
+            if not (isinstance(m, dict) and m.get("by") and m.get("kind") and isinstance(m.get("items"), int)):
+                E(fn, n, "meta needs by, kind and items (a number); minutes, fetches, tokens are optional")
+            continue
         for k in ("by", "packet", "note"):
             if not x.get(k):
                 E(fn, n, f"missing '{k}'")

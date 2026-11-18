@@ -166,7 +166,7 @@ output:
 <div class="gi-hero-top">
 <div class="gi-hero-l">
 <p class="gi-updated"><span>Last updated</span> <time id="gi-asof"></time></p>
-<p class="gi-intro">The working state of place-based data discovery: every public dataset assessed so far for linking to where patients live, what has been checked, and what is still open. <a href="https://github.com/OHDSI/GIS/tree/main/exploration/place-data-inventory">Details and roadmap on GitHub</a></p>
+<p class="gi-intro">The working state of place-based data discovery: every public dataset assessed so far for linking to where patients live, what has been checked, and what is still open. Not everything here is in the Gaia catalog yet: only the datasets marked &#10003; have made it in. <a href="https://github.com/OHDSI/GIS/tree/main/exploration/place-data-inventory">Details and roadmap on GitHub</a></p>
 </div>
 <div class="gi-stats">
 <div><b id="gi-s-n"></b><span>datasets assessed</span></div>

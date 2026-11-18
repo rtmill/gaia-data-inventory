@@ -3,10 +3,10 @@
 
     python scripts/lookup.py "<name, DOI, URL or id>"   top matches in the inventory and the candidate families
     python scripts/lookup.py --id <id>                  every non-empty field of one row
-    python scripts/lookup.py --batch <BATCH>            the rows (or candidates) of one batch, e.g. BR-03 or CA-02
-    python scripts/lookup.py --batches                  open batches per queue
+
+For the work queue (what's open, slices, estimates, claiming) use scripts/queue.py.
 """
-import csv, difflib, glob, json, os, sys
+import csv, difflib, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import inv  # noqa: E402
 
@@ -45,7 +45,7 @@ def search(q):
     fam = load(os.path.join(inv.ROOT, "base", "candidate-families.csv"))
     hits = [(s, r) for s, r in sorted(((score(q, r, ("doi", "all_dois", "title", "publisher")), r) for r in fam), key=lambda x: -x[0])[:3] if s >= 0.6]
     if hits:
-        print("Candidate families (not yet checked unless in a closed batch):")
+        print("Candidate families (not yet checked):")
         for s, r in hits:
             print(f"  {s:.2f}  {r['doi']}  {r['title'][:80]} | {r['publisher'][:30]} | {r['anchors']} | {r['region']}")
     print("A match >= 0.75 with the same publisher or DOI means it is already in: update that row.")
@@ -61,33 +61,8 @@ def one(i):
     sys.exit(f"no row {i}")
 
 
-def batch(b):
-    for p in sorted(glob.glob(os.path.join(B, "queues", "*.csv"))):
-        rs = [r for r in load(p) if r.get("batch") == b]
-        for r in rs:
-            if "doi" in r:
-                print(f"{r['doi']}  {r['title'][:90]}\n    publisher {r['publisher']} | {r['year']} | anchors {r['anchors']} | region {r['region']} | siblings {r['siblings']}")
-            else:
-                print(f"{r['id']}  [{r['verify_tier']}]  {r['dataset_name'][:80]}\n    {r['site_url']}\n    open: {r['open_checks']}  hint: {r['hint'][:160]}")
-        if rs:
-            print(f"({len(rs)} items, packet {rs[0]['packet']}, queue {os.path.basename(p)[:-4]})")
-            return
-    sys.exit(f"no open batch {b}")
-
-
-def batches():
-    bj = json.load(open(os.path.join(B, "batches.json"), encoding="utf-8"))["batches"]
-    by = {}
-    for bid, x in sorted(bj.items()):
-        if x["status"] == "open":
-            by.setdefault(x["queue"], []).append(bid)
-    for q, ids in by.items():
-        print(f"{q}: {len(ids)} open ({', '.join(ids[:6])}{' ...' if len(ids) > 6 else ''})")
-    print("Claim one by assigning yourself its GitHub issue ([batch XX-nn]).")
-
-
 if __name__ == "__main__":
     a = sys.argv[1:]
     if not a:
         sys.exit(__doc__)
-    {"--id": lambda: one(a[1]), "--batch": lambda: batch(a[1]), "--batches": batches}.get(a[0], lambda: search(" ".join(a)))()
+    {"--id": lambda: one(a[1])}.get(a[0], lambda: search(" ".join(a)))()

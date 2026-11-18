@@ -1,0 +1,7 @@
+kind,minutes_per_item,tokens_per_item,fetches_per_item,yield,basis
+read,2.5,16000,3,about 4 in 10 Bronze rows reach Silver or better,"page reads on 10-22 and 10-28: 431 rows, 2.71M + 4.3M tokens (15-17k per row), brief budget 2-3 min per row"
+settle,2.5,16000,3,most rows gain one or two settled checks,same page-read measurements as 'read'
+successor,3,,4,about half get resolved,"iteration 19: 14 of 28 resolved; time and tokens not measured"
+schema,1,,1,about 4 in 10 rows yield a key or columns; 2 in 10 a full column list,"iteration 25: 85 rows, 68 requests, about 10 min; tokens not measured"
+person-read,5,0,0,about 9 in 10 pages open for a person,"iteration 18: 145 of 167 opened; minutes are a person's, a guess"
+candidate,2.2,,8,about 1 family in 6 becomes a row; a third to two thirds of rows are Gold,"iterations 20 and 22: about 27 rows per hour, 8 requests per row, 200 families gave 32 rows; tokens not measured"

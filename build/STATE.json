@@ -14,14 +14,13 @@
  "with_key_vintage": 10,
  "ledger_files": 0,
  "contributors": [],
- "open_batches": {
-  "bronze-reads": 11,
-  "browser-needed": 3,
-  "candidates": 28,
-  "failed-successors": 2,
-  "recipe-ready": 10,
-  "silver-open": 10
+ "queue": {
+  "candidate": 276,
+  "person-read": 24,
+  "read": 101,
+  "schema": 50,
+  "settle": 97,
+  "successor": 13
  },
- "candidate_families_open": 276,
  "candidates_ruled_out": 0
 }
