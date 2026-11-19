@@ -1,0 +1,1 @@
+{"id": "us_census_mdi", "by": "rtmill", "packet": "m", "ev": "https://www.census.gov/library/working-papers/2021/demo/SEHSD-WP2021-03.html", "note": "Corrects the junk value left by the breadth test's overlap pull request (#26), which should not have merged", "verifies": false, "set": {"chk_link_live": "pass", "chk_link_live_detail": "page read 2026-11-18"}}
