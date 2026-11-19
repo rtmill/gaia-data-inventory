@@ -9,7 +9,7 @@ You help one person decide **how much work to take**, do it, and leave **one led
 
 ## 1. Start: show the queue, let the user carve
 
-1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Then, without asking: `git pull --rebase origin main` and `git switch -c work/<handle>-<YYYYMMDD-HHMM>` (the user never handles branches).
+1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Then, without asking, get current: if the folder is on `main`, `git pull --ff-only`. If it is on a leftover `work/…` branch with nothing uncommitted, `git switch main` first; if there is an unsubmitted ledger file from an earlier session, say so and ask whether to submit or discard it before starting anything new. **Don't create a branch now**: the work is only a new file under `ledger/`, and the branch is made when submitting (section 6). The user never handles branches.
 2. **`/inventory <issue number>`**: the user already has a claim. `python scripts/queue.py --issue <n>` lists its items; go to section 3.
 3. **Otherwise** run `python scripts/queue.py` (read all of its output; don't truncate it) and present the choice so a newcomer can decide by outcome. Keep it to this, with no jargon and no `basis` text unless asked:
    - **Where things stand**, one line: the stages with their counts (leads → listed, unverified → verified → fully specified). Say what "fully specified" means: columns, place key and its vintage, geometry, which is what a recipe is written from.
@@ -107,7 +107,7 @@ Verdicts: `not_place_data`, `not_a_dataset` (paper, code, slides), `out_of_scope
 
 ## 6. Finish
 
-1. `python scripts/validate.py --changed --against origin/main`. Fix every error. If it says a row was changed on main since you branched, run `lookup.py --id` for that row, reconsider your record, then `git rebase origin/main`.
+1. `git fetch origin`, then `python scripts/validate.py ledger/<your file>.jsonl --against origin/main`. Fix every error. If it says a row was changed on main since you started, run `git pull --ff-only`, then `lookup.py --id` for that row, and reconsider your record.
 2. Tell the user in 3-5 lines: items done against items claimed, checks settled, rows added, candidates ruled out, what was blocked, anything that looked wrong in an existing row, and what the session took against the estimate.
-3. Ask one question: **"Submit this?"** On yes, do all of it yourself: `git add ledger/`, `git commit -m "Inventory: <kind> (<n> items)"`, `git push -u origin HEAD`, `gh pr create --title "Inventory: <kind>, <n> items" --body "Closes #<claim issue>. <your summary>"`. No AI attribution lines anywhere. Tell the user the PR link and that GitHub will check it and merge it by itself within a few minutes if it passes; nothing more is needed from them.
-4. If the user comes back saying the check failed: `gh pr checks`, read the failing log (`gh run view --log-failed`), fix the ledger file, commit and push to the same branch.
+3. Ask one question: **"Submit this?"** On yes, do all of it yourself, in this order: `git switch -c work/<handle>-<YYYYMMDD-HHMM>` (the new file comes along), `git add ledger/`, `git commit -m "Inventory: <kind> (<n> items)"`, `git push -u origin HEAD`, `gh pr create --title "Inventory: <kind>, <n> items" --body "Closes #<claim issue>. <your summary>"`, and finally `git switch main` so the folder is left where it started. No AI attribution lines anywhere. Tell the user the PR link and that GitHub will check it and merge it by itself within a few minutes if it passes; nothing more is needed from them.
+4. If the user comes back saying the check failed: `gh pr checks`, read the failing log (`gh run view --log-failed`), `git switch` to that PR's branch, fix the ledger file, commit, push, and `git switch main` again.
