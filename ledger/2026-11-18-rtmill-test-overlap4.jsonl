@@ -1,0 +1,2 @@
+{"meta": {"by": "rtmill", "kind": "settle", "items": 1, "minutes": 1, "fetches": 0, "tokens": null, "claim": null}}
+{"id": "global_gdl_shdi", "by": "rtmill", "packet": "b", "ev": "https://globaldatalab.org/shdi/", "note": "TEST overlap: sets a check the settle PR changed", "set": {"chk_temporal": "pass", "chk_temporal_detail": "overlap test", "chk_temporal_evidence": "https://globaldatalab.org/shdi/"}}
