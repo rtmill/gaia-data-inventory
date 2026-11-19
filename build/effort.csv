@@ -1,5 +1,6 @@
 file,by,kind,items,minutes,fetches,tokens
 2026-11-18-rtmill-candidate-care-sites.jsonl,rtmill,candidate,3,3,9,
 2026-11-18-rtmill-read-first-two.jsonl,rtmill,read,2,5,4,
+2026-11-18-rtmill-schema-two.jsonl,rtmill,schema,1,12,7,
 2026-11-18-rtmill-settle-two.jsonl,rtmill,settle,2,9,7,
 2026-11-18-rtmill-test-overlap.jsonl,rtmill,read,1,1,0,
