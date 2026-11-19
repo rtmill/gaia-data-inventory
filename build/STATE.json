@@ -4,15 +4,15 @@
  "tiers": {
   "Gold": 157,
   "Silver": 471,
-  "Bronze": 105,
+  "Bronze": 106,
   "Browser needed": 20,
-  "Failed": 29
+  "Failed": 28
  },
  "verified": 628,
  "file_verified": 15,
  "with_schema": 36,
  "with_key_vintage": 10,
- "ledger_files": 7,
+ "ledger_files": 8,
  "contributors": [
   "rtmill"
  ],
@@ -22,7 +22,7 @@
   "read": 99,
   "schema": 49,
   "settle": 95,
-  "successor": 13
+  "successor": 12
  },
  "candidates_ruled_out": 3,
  "funnel": {
