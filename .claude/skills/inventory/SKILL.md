@@ -31,16 +31,16 @@ Kinds and packets: `read`, `settle`, `successor` = packet b; `schema` = c; `pers
 
 1. Run `python scripts/queue.py --approaches` and show its rows as one table: **Approach** | **How it did last time** | **Verdict** | **What's left**. Add a last row: **"Something new"**: work out a new way of finding data together. Ask which, and the budget if not given yet.
 2. **Continuing one:** `python scripts/queue.py --approach "<name>"` gives the full row. Read its brief (the `continue` path) and the same folder's `results.md` (what happened last time and what to change). Start from "what's left"; don't re-run what was done.
-3. **Something new:** ask what they have in mind (a source, a kind of data, a place, a search trick). Run `python scripts/queue.py --approaches --all` to check it isn't a variant of something tried or closed, and say so if it is. Then write a short brief with them before doing anything: the question the run answers, where it will look, what counts as a hit, the caps, and what result would mean "worth scaling". Save it as the first part of the run's note (step 6).
+3. **Something new:** ask what they have in mind (a source, a kind of data, a place, a search trick). Run `python scripts/queue.py --approaches --all` (every approach, including closed ones) to check it isn't a variant of something tried or closed, and say so if it is. Then write a short brief with them before doing anything: the question the run answers, where it will look, what counts as a hit, the caps, and what result would mean "worth scaling". Save it as the first part of the run's note (step 6).
 4. Size the run to the budget and say so before starting: how many searches or listings, how many records read (use the approach's cost line where there is one), and a hard stop. Rules for every run: one job, no sub-agents, metadata and pages only (no data files), no sign-ins or bot-check workarounds, 1 request per second per host.
 5. Claim it: check that no open `claim` issue names the same approach, then `gh issue create --label claim --assignee @me --title "[claim] explore: <name> (<handle>)" --body "<what you will do and the caps>"`.
 6. Outputs, all under `ledger/` so they merge automatically:
    - **Leads you found but didn't read:** `ledger/leads/<YYYY-MM-DD>-<handle>-<slug>.csv` with columns `ref` (DOI or landing URL), `title`, `publisher`, `year`, `anchor` (from `method/anchors.csv`), `region`. Check each with `python scripts/lookup.py` first and leave out what's already in. They join the queue as `candidate` items after merge.
    - **Datasets you read:** new-row records in the session's ledger file, as in section 5 (packet e).
    - **What happened:** `ledger/notes/<YYYY-MM-DD>-<handle>-<slug>.md`: the brief (for a new approach), what you searched, counts (found, already known, new, read, added), precision if you can measure it, what blocked, and your verdict (scale, scale with changes, or drop, and why). A maintainer folds this into `method/approaches.csv`, which is how the next person sees how the approach is doing.
-7. The session's `meta` line uses `"kind": "explore: <name>"`. Then finish as in section 6.
+7. The session's `meta` line uses `"kind": "explore: <name>"`. Then finish as in section 6. A run that finds nothing is still worth submitting: write the note (what was searched and why it came up empty) and the session file with `items` 0; skip the leads file.
 
-**What you may write on the user's computer:** only inside this repository folder, and only these: the session's file under `ledger/` (and `ledger/packets/`, `ledger/leads/`, `ledger/notes/` for the kinds that use them), and `.inventory-discarded/` when the user discards work. Don't save fetched pages, downloads, logs or scratch files anywhere, inside or outside the folder.
+**What you may write on the user's computer:** only inside this repository folder, and only these: the session's file under `ledger/` (and `ledger/packets/`, `ledger/leads/`, `ledger/notes/` for the kinds that use them), and `.inventory-discarded/` when the user discards work. Don't save fetched pages, downloads, logs or scratch files anywhere, inside or outside the folder, temporary directories included. If you need something from a page again, work from what you already read, or leave the check open.
 
 ## 1c. A dataset the user has in mind
 
@@ -49,7 +49,7 @@ They may give a name, a web address or DOI, or both. Nothing is reserved for thi
 1. **Find it, cheaply.** With an address or DOI: fetch that one page or record. With only a name: `python scripts/lookup.py "<name>"` first, then at most one web search to find the publisher's own page (not an aggregator's copy).
 2. **Confirm before doing the work.** As soon as you can say what you found, stop and show it in a few lines: the title as the publisher gives it, the publisher, the address, what it covers (years, geography) if the first page says, and anything that makes it ambiguous (several versions or editions, a family of related products, a mirror on another site, a similarly named dataset from someone else). Ask: "Is this the one you mean?" If there are two or three plausible matches, list them and ask which. Don't read further pages or write any record until they confirm.
 3. **Say whether it's already in.** Show the `lookup.py` matches (inventory rows and leads). If it is in: show its tier and open checks, and offer to settle those instead of adding anything. If a version or sibling is in: ask whether theirs is a new entry or belongs with that one (one entry per product family).
-4. **Then do it** as packet a (section 3 limits, section 5 record), or as an update to the existing row. If the user knows things about the dataset, treat that as a pointer to where to look, not as evidence: every value still needs its link.
+4. **Then do it** as packet a (section 3 limits, section 5 record), or as an update to the existing row. If it is already in and its page is blocked, write nothing: say so, and offer it as a page for the user to open themselves. If the user knows things about the dataset, treat that as a pointer to where to look, not as evidence: every value still needs its link.
 
 ## 2. Finding things
 
@@ -61,7 +61,8 @@ They may give a name, a web address or DOI, or both. Nothing is reserved for thi
 | Packet | Fetches per item | Stop the item when |
 |---|---|---|
 | a | 4 | drafted, or blocked |
-| b | 3 | checks settled, or blocked |
+| b (`read`, `settle`) | 3 | checks settled, or blocked |
+| b (`successor`) | 5 (the dead address, one search, the new page, up to two of its pages) | a new address with its checks, or confirmed gone |
 | c | 6 (metadata records first, then one documentation page) | packet filled, or a data file would be needed |
 | d | 0 | the user has reported the page |
 | e | 4 per family | a row or a verdict |
@@ -70,7 +71,9 @@ Stop the session at the user's budget (items, time or tokens), whichever comes f
 
 **Records before pages.** These answer in one call and count as a read: Zenodo `/api/records/<id>` (check `access_right`: closed or restricted is `restricted`), figshare `/v2/articles/<id>`, Dataverse `/api/datasets/:persistentId/?persistentId=doi:<DOI as published>`, CKAN `/api/3/action/package_show?id=…` (and `datastore_search?resource_id=…&limit=0` for fields), Socrata `/api/views/<id>.json`, ArcGIS layer `?f=json`, Census `variables.json`, STAC collection JSON, FGDC or ISO XML metadata. A DataCite record alone does not settle a licence and gives publication years, not coverage.
 
-**Blocked** (challenge page, 401/403/429, "enable JavaScript", empty shell; ICPSR, openICPSR and NaNDA always are): set no checks, note `blocked`, and tell the user it is `person-read` material. Never work around it.
+**Blocked** (challenge page, 401/403/429, "enable JavaScript", empty shell; ICPSR, openICPSR and NaNDA always are): never work around it. Still write a record, so the item isn't offered to the next person: `{"id": …, "by": …, "packet": …, "blocked": true, "ev": "<the address that blocked>", "note": "blocked: <what you got>", "set": {}}`. For a `read` item only, put `"url_health": "blocked"` in `set`, which moves it to the pages a person opens. For `settle`, `schema` and `successor` items leave `set` empty (a blocked `schema` record needs no packet file). Tell the user at the end which were blocked.
+
+**Garbled text** from a metadata file usually means it isn't UTF-8 (older government metadata is often UTF-16): decode what you already have before fetching again. A re-fetch counts against the cap.
 
 ## 4. Judging the checks
 
@@ -113,7 +116,7 @@ Every other record has `by`, `packet`, `ev` (the main URL you read) and `note` (
 ```json
 {"candidate": "10.5281/zenodo.123", "verdict": "not_place_data", "reason": "a paper's figures, no place-keyed data", "by": "handle", "packet": "e", "ev": "https://zenodo.org/api/records/123", "note": "..."}
 ```
-A landing page that says access is restricted, with no open record to read, is a `restricted` verdict, not a row. Verdicts: `not_place_data`, `not_a_dataset` (paper, code, slides), `out_of_scope` (not health-relevant, or microdata of individuals), `restricted`, `blocked`, `duplicate_of:<inventory id>`. Every family you finish ends as a row (new, or an update to an existing one with the family's DOI in `notes`) or a verdict.
+A landing page that says access is restricted, with no open record to read, is a `restricted` verdict, not a row. While exploring you may rule out things that were never in the queue; the check will note that, which is fine. Verdicts: `not_place_data`, `not_a_dataset` (paper, code, slides), `out_of_scope` (not health-relevant, or microdata of individuals), `restricted`, `blocked`, `duplicate_of:<inventory id>`. Every family you finish ends as a row (new, or an update to an existing one with the family's DOI in `notes`) or a verdict.
 
 **Schema records** (packet c): set `schema_source` (the record URL), `schema_checked_on` (today), `place_key_system`, `place_key_vintage`, and where empty `columns_found` (semicolon list, first 40), `place_key_found`, `geometry_found`, `crs`, `years_found`. Also write `ledger/packets/<id>.json`:
 `{"id", "schema_source", "route", "columns": [{"name", "type", "meaning"}], "place_key": {"column", "system", "level", "vintage", "basis"}, "geometry": {"kind": "embedded|reference|none", "type", "crs", "reference"}, "years_found", "not_read": ["sample_rows", "value_coding", "missing_coding"], "evidence": [urls], "notes"}`. A schema read is not a page verification: don't set `verification_level` or `file_verified`.

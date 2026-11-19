@@ -133,7 +133,7 @@ def apply_file(rows, cols, path, recs=None):
         who = f" by {x['by']}" if x.get("by") else ""
         r[NOTE] = f"{step}{who}: {x.get('note', '')}" + (f"; evidence {x['ev']}" if x.get("ev") else "")
         # a schema/metadata record is not a page verification: no verified_on / partB_* stamp
-        if x.get("ev") and x.get("verifies", "schema_source" not in s):
+        if x.get("ev") and not x.get("blocked") and x.get("verifies", "schema_source" not in s):
             r["partB_pages_read"] = (r["partB_pages_read"] + "; " if r["partB_pages_read"] else "") + x["ev"]
             r["partB_source"] = (r["partB_source"] + "; " if r["partB_source"] else "") + step
             r["verified_on"] = date

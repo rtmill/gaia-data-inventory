@@ -37,7 +37,10 @@ def search(q):
     rows = load(os.path.join(B, "inventory-all.csv"))
     f = ("id", "dataset_name", "organization", "site_url", "access_url", "persistent_id", "evidence_url", "notes")
     print(f"Inventory ({len(rows)} rows), best matches for {q!r}:")
-    for s, r in sorted(((score(q, r, f), r) for r in rows), key=lambda x: -x[0])[:5]:
+    top = sorted(((score(q, r, f), r) for r in rows), key=lambda x: -x[0])[:5]
+    if not any(s >= 0.4 for s, _ in top):
+        print("  no match: nothing in the inventory resembles this")
+    for s, r in top:
         if s >= 0.4:
             oc = ",".join(c[4:] for c in CORE if r.get(c) not in ("pass", "warn", "fail", "n.a.")) or "none"
             print(f"  {s:.2f}  {r['id']}  [{r['verify_tier']}]  {r['dataset_name'][:80]} | {r['organization'][:40]}\n"
@@ -48,7 +51,8 @@ def search(q):
         print("Candidate families (not yet checked):")
         for s, r in hits:
             print(f"  {s:.2f}  {r['doi']}  {r['title'][:80]} | {r['publisher'][:30]} | {r['anchors']} | {r['region']}")
-    print("A match >= 0.75 with the same publisher or DOI means it is already in: update that row.")
+    if any(s >= 0.4 for s, _ in top) or hits:
+        print("A match >= 0.75 with the same publisher or DOI means it is already in: update that row.")
 
 
 def one(i):

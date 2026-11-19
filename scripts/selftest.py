@@ -43,18 +43,18 @@ rec = lambda note, **s: json.dumps({"id": rid, "by": "selftest", "packet": "b", 
 good = rec("clean", chk_license="pass", chk_license_detail="CC BY 4.0", chk_license_evidence="https://example.org/licence", license_confirmed="CC BY 4.0", license_class="open")
 
 git("switch", "-qc", "contrib")
-open(os.path.join(tmp, "ledger", "2099-01-01-selftest-good.jsonl"), "w", encoding="utf-8").write(good)
+open(os.path.join(tmp, "ledger", "2099-01-01-selftest-good-0000.jsonl"), "w", encoding="utf-8").write(good)
 git("add", "-A"); git("commit", "-qm", "good")
 rc, out = sh(py, "scripts/validate.py", "--changed", "--against", "main")
 check("a clean contribution passes", rc == 0 and "0 errors" in out, out)
 
-open(os.path.join(tmp, "ledger", "2099-01-01-selftest-bad.jsonl"), "w", encoding="utf-8").write(rec("bad", chk_unit="good", verify_tier="Gold"))
-rc, out = sh(py, "scripts/validate.py", "ledger/2099-01-01-selftest-bad.jsonl")
+open(os.path.join(tmp, "ledger", "2099-01-01-selftest-bad-0000.jsonl"), "w", encoding="utf-8").write(rec("bad", chk_unit="good", verify_tier="Gold"))
+rc, out = sh(py, "scripts/validate.py", "ledger/2099-01-01-selftest-bad-0000.jsonl")
 check("a bad contribution is rejected, with both errors named", rc == 1 and "chk_unit" in out and "verify_tier" in out and "Traceback" not in out, out)
-os.remove(os.path.join(tmp, "ledger", "2099-01-01-selftest-bad.jsonl"))
+os.remove(os.path.join(tmp, "ledger", "2099-01-01-selftest-bad-0000.jsonl"))
 
 git("switch", "-q", "main")
-open(os.path.join(tmp, "ledger", "2099-01-01-other-first.jsonl"), "w", encoding="utf-8").write(rec("someone else got there first", chk_temporal="pass", chk_temporal_detail="2010-2024", chk_temporal_evidence="https://example.org/years", temporal_confirmed="2010-2024"))
+open(os.path.join(tmp, "ledger", "2099-01-01-other-first-0000.jsonl"), "w", encoding="utf-8").write(rec("someone else got there first", chk_temporal="pass", chk_temporal_detail="2010-2024", chk_temporal_evidence="https://example.org/years", temporal_confirmed="2010-2024"))
 git("add", "-A"); git("commit", "-qm", "someone else")
 git("switch", "-q", "contrib")
 rc, out = sh(py, "scripts/validate.py", "--changed", "--against", "main")

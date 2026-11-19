@@ -1,0 +1,17 @@
+shortlist_idx,publisher,title,url,reason
+11,NASA SEDAC / CIESIN,U.S. Social Vulnerability Index (SoVI) Grids 2019,https://ciesin.columbia.edu/data/us-sovi-grids/,HTTP 403 from ciesin.columbia.edu
+37,NASA SEDAC / CIESIN,U.S. Baseline Resilience Indicators for Communities (BRIC) Index Grids 2020,https://www.ciesin.columbia.edu/data/us-bric-grids/,HTTP 403 from ciesin.columbia.edu
+12,NaNDA (ICPSR),"National Neighborhood Data Archive (NaNDA): PRISM Climate of Census Tracts, United States, 1981-2024",https://www.icpsr.umich.edu/sites/nanda/view/studies/230941/versions/V2,HTTP 403 (ICPSR bot check)
+78,NaNDA (ICPSR),"National Neighborhood Data Archive (NaNDA): Eating and Drinking Places by Census Tract and ZCTA, United States, 1990-2022",https://www.icpsr.umich.edu/sites/nanda/view/studies/208751/versions/V3,HTTP 403 (ICPSR bot check)
+42,NASA (GES DISC / Earthdata),OMPS-N20 L3 NM Ozone (O3) Total Column 1.0 deg grid daily V2,https://disc.gsfc.nasa.gov/datasets/OMPS_N20_NMTO3_L3_DAILY_2/summary,landing page returned empty (JavaScript-only); not worked around
+3,NOAA / NCEI,"NOAA RESTORE Science Program: Protecting Texas Coastlines from Potential Oil Spills in Galveston Bay using unmanned aerial system (UAS) Surveys and Maps of a New Response Effectiveness Index: Field test measurements of near-surface currents Freeport, Texas 2024-05-22 to 2024-05-24 (NCEI Accession 0314901)",https://www.ncei.noaa.gov/archive/accession/0314901,"read, then dropped: single-event field test (Freeport TX, 3 days)"
+41,US EPA,CMAQ v5.5+ CRACMM2 Gridded Output for Summer 2023 and Monoterpene Sensitivities over the U.S. and Canada (v1),https://catalog.data.gov/dataset/cmaq-v5-5-cracmm2-gridded-output-for-summer-2023-and-monoterpene-sensitivities-over-the-u-,"landing read; grid and licence text not read in time, not recorded"
+4,USGS,U.S. Department of the Interior wildfire risk map for the U.S. Wildland Fire Service,https://www.sciencebase.gov/catalog/item/6998a9feb66b01404c2dbbc2,"read; unit not stated on the record page, not recorded"
+63,European Environment Agency,WISE WFD Protected Areas under the Water Framework Directive - PUBLIC VERSION - version 2026.08,https://sdi.eea.europa.eu/catalogue/srv/api/records/1627452a-ac73-42fc-83ec-e671a5cb6ee9?language=all,"read; no licence sentence found, not recorded"
+2,GRID3,GRID3 COD - Health Facilities v8.0,https://data.grid3.org/datasets/f16da5afc22741748599c888a0d1d4e8,not read: GRID3 v8.0 is superseded by v9.0 (already in master)
+70,GRID3,GRID3 COD - Health Zones v8.0,https://data.grid3.org/datasets/7334c30989ea4b91a6463219f722e1b1,not read: GRID3 v8.0 superseded by v9.0
+14,JRC (European Commission),"GDO Standardized Precipitation-Evapotranspiration Index MERRA, 12-month accumulation period (SPEI-12) (version 1.0.0)",https://data.jrc.ec.europa.eu/dataset/f989a7d4-9659-4c68-85b6-0a2e27683405,"read; grid resolution not in page text, not recorded"
+23,HUD,Public Housing Authorities,https://hudgis-hud.opendata.arcgis.com/datasets/3d6ef39026b94eb59ddb7ce28eb0b692,read; geometry type not confirmed
+31,FEMA,National Weather Service Ice Accumulation Forecast,https://gis-fema.hub.arcgis.com/datasets/0a279bc085264a45b1c48ad6b60afd8d,not added: 72-hour forecast layer
+65,FEMA,National Weather Service Smoke Forecast,https://gis-fema.hub.arcgis.com/datasets/a98fd08751a5480c898b7cebe38807f4,not added: 48-hour forecast layer
+32,FEMA,Colleges and Universities,https://gis-fema.hub.arcgis.com/datasets/d257743c055e4206bd8a0f2d14af69fe,"read; licence text truncated, not recorded"

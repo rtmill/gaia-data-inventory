@@ -65,7 +65,9 @@ touched = {}
 for path in paths:
     fn = os.path.basename(path)
     if not re.match(r"^\d{4}-\d{2}-\d{2}-[A-Za-z0-9-]+-[a-z0-9.-]+\.jsonl$", fn):
-        E(fn, 0, "name must be <YYYY-MM-DD>-<github-handle>-<slug>.jsonl (lowercase slug)")
+        E(fn, 0, "name must be <YYYY-MM-DD>-<github-handle>-<slug>-<HHMM>.jsonl (lowercase slug)")
+    elif not MAINT and not re.search(r"-\d{4}\.jsonl$", fn):
+        E(fn, 0, "name must end with the time you started, -<HHMM>.jsonl (e.g. 2026-11-19-yourhandle-read-1432.jsonl), so two sessions never share a name")
     if os.path.dirname(path) != os.path.abspath(inv.LEDGER):
         E(fn, 0, "ledger files live directly in ledger/")
     try:
@@ -90,7 +92,7 @@ for path in paths:
             E(fn, n, "packet m is for maintainer files (run with --maintainer)")
         if inv.is_candidate_verdict(x):          # packet e: a candidate family ruled out
             if x["candidate"].strip().lower() not in fams:
-                W(fn, n, f"candidate {x['candidate']} is not a lead in the queue")
+                W(fn, n, f"candidate {x['candidate']} was not a lead in the queue (expected for something found while exploring; otherwise check the reference)")
             v = x.get("verdict", "")
             if not (v in ("not_place_data", "out_of_scope", "not_a_dataset", "restricted", "blocked") or v.startswith("duplicate_of:")):
                 E(fn, n, "verdict must be not_place_data, out_of_scope, not_a_dataset, restricted, blocked or duplicate_of:<id>")
@@ -158,7 +160,7 @@ for path in paths:
             E(fn, n, f"license_class {s['license_class']!r} not one of {sorted(LIC)}")
         if s.get("license_class") == "public_domain_us_federal" and ".gov" not in (s.get("chk_license_evidence", "") + x.get("ev", "")).lower():
             E(fn, n, "the federal rule needs a .gov evidence page")
-        if x.get("packet") == "c":
+        if x.get("packet") == "c" and not x.get("blocked"):
             p = os.path.join(inv.LEDGER, "packets", f"{i}.json")
             if not os.path.exists(p):
                 E(fn, n, f"packet c needs ledger/packets/{i}.json")

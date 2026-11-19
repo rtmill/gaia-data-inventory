@@ -39,7 +39,7 @@ Also during T1: before claiming, run `python scripts/queue.py --by region --kind
 | # | Test | Expected |
 |---|---|---|
 | F1 | On a branch `test/bad-file`, add `ledger/<today>-rtmill-test-bad.jsonl` with one record that sets `chk_unit` to `"good"` and `verify_tier` to `"Gold"` on a real id. Push, open a pull request titled "TEST: must fail" | The check goes red and names both errors; nothing merges. Then close the pull request and delete the branch |
-| F2 | Overlap. Find the main commit just before T2's merge (`git log`). Create `test/overlap` from it, add a ledger file that sets one check on a dataset T2 changed, push, open "TEST: overlap must fail" | The check goes red with "was changed on origin/main since you branched". Close and delete |
+| F2 | Overlap. Pick a dataset changed by the most recent merged contribution, and find the newest main commit before that merge (`git log`). Create `test/overlap` from it, add a ledger file that sets one check on that dataset, run `python scripts/selftest.py` locally first, push, open "TEST: overlap must fail" | The check goes red with "was changed on origin/main since you branched". Close and delete |
 | F3 | Abandoned claim. Claim 2 `read` items, confirm `python scripts/queue.py --kind read --n 5` no longer offers them, then close the claim issue without doing them and confirm they are offered again | As described |
 | F4 | A change outside `ledger/`: this is the findings pull request below | The check passes but the pull request is **not** merged, and the log says it is waiting for a maintainer |
 

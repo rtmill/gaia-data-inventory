@@ -76,7 +76,7 @@ ap = argparse.ArgumentParser(add_help=False)
 for f in ("kind", "region", "category", "host", "tier", "publisher", "match", "by", "approach"):
     ap.add_argument("--" + f)
 ap.add_argument("--n", type=int); ap.add_argument("--issue", type=int)
-for f in ("claim", "wg", "fresh", "help", "approaches"):
+for f in ("claim", "wg", "fresh", "help", "approaches", "all"):
     ap.add_argument("--" + f, action="store_true")
 a = ap.parse_args()
 if a.help:
@@ -85,7 +85,7 @@ if a.approaches or a.approach:
     AP = load(os.path.join(inv.ROOT, "method", "approaches.csv"))
     if a.approaches:      # short list of what can be continued now; --approach "<name>" for one in full, --approaches --all for every row
         for r in AP:
-            if "--all" in sys.argv or r["continue_with"].startswith("brief:"):
+            if a.all or r["continue_with"].startswith("brief:"):
                 print(f"{r['approach']} | last time: {r['result'][:110]} | verdict: {r['verdict'][:70]} | left: {r['remaining'][:120]}")
         print('One in full: --approach "<name>". Every approach, including those done through the queue, closed, or needing a maintainer brief: --approaches --all')
         sys.exit()

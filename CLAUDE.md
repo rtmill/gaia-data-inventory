@@ -7,7 +7,7 @@ An evidence-backed inventory of public geospatial datasets for linking place to 
 Always:
 
 - **Never read `build/inventory-all.csv`, `base/inventory-base.csv` or `base/candidates-datacite-*.csv` into context.** They are large. Use `python scripts/queue.py` (the work queue) and `python scripts/lookup.py` (find a row).
-- **Contributions write only `ledger/<YYYY-MM-DD>-<handle>-<slug>.jsonl`** (plus `ledger/packets/<id>.json` for packet c). Never edit `base/`, `build/`, `method/`, `scripts/`, `.claude/` or `.github/` unless the user is a maintainer and asks.
+- **Contributions write only `ledger/<YYYY-MM-DD>-<handle>-<slug>-<HHMM>.jsonl`** (plus `ledger/packets/<id>.json` for packet c). Never edit `base/`, `build/`, `method/`, `scripts/`, `.claude/` or `.github/` unless the user is a maintainer and asks.
 - **Evidence URL for every value**, read from the publisher's page, a repository or catalog record (Zenodo, figshare, Dataverse, CKAN, Socrata, ArcGIS JSON) or a metadata record. Your own knowledge of a dataset is not evidence. Search results are not evidence.
 - **No sign-ins, registrations, form submissions, bot-check workarounds or data-file downloads.** Record blocked pages as blocked.
 - **Caps** in the skill apply. When one is hit, stop and write what you have.
