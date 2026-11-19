@@ -2,40 +2,48 @@
 
 > **This assumes:** (1) you have Claude Code, the `gh` CLI signed in, and push access to this repo (ask Robert); (2) you add **ledger files**, never edits to the CSVs in `base/` or `build/`; (3) every value you add was read on the publisher's page, its repository record or its metadata record, and that URL is kept as evidence.
 
-## Start (5 minutes)
+## What you do
 
-```bash
-git clone https://github.com/rtmill/gaia-data-inventory && cd gaia-data-inventory
-git switch -c work/<your-handle>-<date>
-claude            # Sonnet is enough: /model sonnet
-```
+1. Clone the repo and start Claude Code in it (Sonnet is enough: `/model sonnet`):
+   ```bash
+   git clone https://github.com/rtmill/gaia-data-inventory
+   cd gaia-data-inventory
+   claude
+   ```
+2. Type `/inventory` and answer its questions: which kind of work, how much of it, and at the end whether to submit.
 
-Then type **`/inventory`**. Claude shows the queue, with what each kind of work costs, and asks how much you want to take. You decide; nothing is pre-assigned.
+## What happens, in order
 
-You can look first without Claude:
+| Step | Who does it |
+|---|---|
+| Shows the open work by kind, with the cost per item in minutes and tokens | Claude |
+| You say which kind and how much (a number of items, or a time or token budget); you can narrow by region, topic, publisher or site | **You** |
+| Reserves those items: opens a GitHub issue titled `[claim] …`, assigned to you, so nobody else takes them | Claude |
+| Reads the pages and writes one file under `ledger/` | Claude |
+| Checks the file, shows you a summary, asks whether to submit | Claude |
+| You say yes | **You** |
+| Makes a branch, commits, pushes, opens a pull request that closes your claim | Claude |
+| Checks the pull request, merges it if it only adds ledger files and passes, rebuilds the inventory and the queue | GitHub Actions |
 
-```bash
-python scripts/queue.py                                    # what's open, and the cost per item
-python scripts/queue.py --by region --kind candidate       # slice it: region, category, host, publisher, tier
-python scripts/queue.py --kind candidate --region Africa --n 15            # what 15 of those would be, and the estimate
-python scripts/queue.py --kind candidate --region Africa --n 15 --claim    # take them (opens an issue assigned to you)
-```
+Anything you reserved but didn't finish goes back to the queue when the claim closes. To look at the queue without Claude: `python scripts/queue.py` (`--help` for slicing and claiming by hand).
 
-Claiming opens a `[claim]` issue listing your items; they disappear from everyone else's queue until the issue closes. Work it with `/inventory <issue number>`. When done, commit the one file in `ledger/`, push, and open a PR with `Closes #<issue>`. CI checks it; if it's green, merge it yourself. Whatever you didn't finish goes back to the queue.
+## What you can take on
 
-## Kinds of work
+A dataset moves through stages: **lead** (might be a dataset) → **listed** (in the inventory, not yet verified) → **verified** (licence, years, spatial unit and access confirmed, each with its link) → **fully specified** (columns, place key and its vintage, geometry: what a Gaia recipe is written from). Each kind of work moves datasets one stage. `/inventory` shows live counts, costs and what 30 minutes buys.
 
-| Kind | What you do | Estimate per item (from earlier runs; `queue.py` shows the current figures) |
+| Work | Takes a dataset from → to | What you end up with |
 |---|---|---|
-| `candidate` | Check a DataCite candidate family: add the real dataset as a row, or rule it out | ~2 min; about 1 in 6 becomes a row |
-| `read` | Read a Bronze row's publisher page and settle its checks | ~2.5 min, ~16k tokens |
-| `settle` | Silver rows with most checks still open: settle them | ~2.5 min, ~16k tokens |
-| `schema` | Columns, place key (system, level, vintage), geometry and years from metadata records | ~1 min |
-| `successor` | A failed row: find where it moved, or confirm it's retired | ~3 min; about half resolve |
-| `person-read` | Open a page that blocks scripts in your own browser; Claude only formats what you report | ~5 min of yours, almost no tokens |
-| a dataset you know | Name it; Claude checks whether it's in, and if not drafts a row (no claim needed) | ~15 min |
+| `candidate` | lead → listed | New datasets in the inventory with first checks; duds ruled out for good |
+| `read` | listed → verified | Unverified datasets verified from the publisher's page |
+| `person-read` | listed → verified | Datasets on sites that block scripts, checked by you in your browser (almost no tokens) |
+| `successor` | failed → listed or retired | Dead links repaired, or the dataset confirmed gone |
+| `settle` | verified on thin evidence → verified in full | The missing checks filled in |
+| `schema` | verified → fully specified | Column list, place key, its geography and vintage, geometry |
+| a dataset you know | nothing → listed | One new dataset, checked (no claim needed) |
 
-Estimates start from measured runs (`method/estimates.csv`) and update from what sessions here actually take: each ledger file's first line records items, minutes and fetches, and tokens if you give Claude your `/cost` total.
+**Or continue an approach that finds new leads.** `python scripts/queue.py --approaches` lists every way of finding data that has been tried (publisher fan-out, place-key search, targeted gap sweeps, DataCite by topic, priority-source listings): how it did, what it cost, the verdict, and what's left of it. Pick one and a budget; Claude continues from where it stopped and hands back new leads (which join the queue), any datasets it read, and a short note on how the approach performed. Approaches marked `maintainer` need a brief written first.
+
+Costs start from measured runs (`method/estimates.csv`) and update from what sessions here actually take: each ledger file's first line records items, minutes and fetches, and tokens if you give Claude your `/cost` total.
 
 ## Rules (Claude follows these; so should you)
 
@@ -46,6 +54,8 @@ Estimates start from measured runs (`method/estimates.csv`) and update from what
 - **Ledger only.** Don't edit `base/`, `build/`, `method/`, `scripts/` or `.claude/` in a contribution PR; those need a maintainer's review (CODEOWNERS).
 
 ## If CI fails
+
+The pull request stays open with a red check; nothing is merged. Tell Claude "the check failed on my pull request" and it will fix it. The usual causes:
 
 - **"was changed on origin/main since you branched"**: someone settled the same row first. Re-check that row against what's on `main` now (`python scripts/lookup.py --id <id>`), drop or update your record, `git rebase origin/main`, push again.
 - **Anything else**: run `python scripts/validate.py --changed` locally; the message says which line and why.

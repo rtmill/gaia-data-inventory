@@ -9,7 +9,7 @@ Maintainers: Robert (rtmill) and whoever he adds. Contributors use the `inventor
 
 ## Reviewing a contribution PR
 
-CI (`validate.yml`) already checks shape, vocabulary, evidence, unit terms, that the file applies, and overlap with `main`. A human review is for judgement, and is optional for `ledger/`-only PRs (CODEOWNERS doesn't require it). When reviewing, spot-check 2-3 records: open the evidence URL, confirm the value. Watch for values that look like memory rather than reading (round years, generic licence names, units not on the page), new rows that duplicate an existing family, and `public_domain_us_federal` on non-federal hosts.
+CI (`validate.yml`) checks shape, vocabulary, evidence, unit terms, that the file applies, and overlap with `main`, and **merges `ledger/`-only PRs by itself when they pass**, then starts the build. So review of contributions happens after the fact: read the merged ledger files now and then; to undo a bad one, add a correcting ledger file (the ledger is append-only). PRs touching anything else wait for a maintainer. When reviewing, spot-check 2-3 records: open the evidence URL, confirm the value. Watch for values that look like memory rather than reading (round years, generic licence names, units not on the page), new rows that duplicate an existing family, and `public_domain_us_federal` on non-federal hosts.
 
 ## Policy and method changes (need a maintainer)
 
@@ -18,6 +18,10 @@ CI (`validate.yml`) already checks shape, vocabulary, evidence, unit terms, that
 - **Hand caps:** set `tier_cap` ("Silver: geometry dependency TBD") in a maintainer record; `tier_of` respects it.
 - **Unit vocabulary, anchors:** `method/unit-vocabulary.csv`, `method/anchors.csv`; dated note per change.
 - **Open WG questions** (don't decide them in a PR): `method/TODO.md` tier 4 (Silver rule 4.10, site-wide terms 4.8, non-commercial sources 4.5, person-level records 4.3).
+
+## The approaches inventory
+
+`method/approaches.csv` is what contributors choose from when they continue an approach: one row per way of finding or verifying data, with how it did, cost, verdict, what's left, next step, and how to continue (`queue: <kind>`, `brief: <path>`, `maintainer`, or `closed`). Keep it current: after a contributor's approach run merges, read its `ledger/notes/*.md` and update that row's result, remaining and next step. To open a new approach to contributors, write a capped brief (pattern: `method/iterations/21-publisher-fanout/approach.md`) and point `continue_with` at it.
 
 ## Big iterations (sweeps, spikes, new methods)
 

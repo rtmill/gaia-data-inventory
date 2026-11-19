@@ -53,7 +53,7 @@ VOCAB = {"pass", "warn", "fail", "n.a.", "not_checked"}
 URL = re.compile(r"^https?://\S+$")
 PACKET_KEYS = ("schema_source", "columns", "place_key", "geometry", "evidence")
 PROTECTED = inv.COMPUTED | {"round", "id"}
-fams = {inv.norm_doi(r["doi"]) for r in inv.read_csv(os.path.join(inv.ROOT, "base", "candidate-families.csv"))[0]}
+fams = {r["item"].lower() for r in inv.read_csv(os.path.join(inv.BUILD, "queue.csv"))[0] if r["kind"] == "candidate"}
 urls_ok = lambda v: all(URL.match(u.strip()) for u in v.split(";") if u.strip())
 
 touched = {}
@@ -84,9 +84,8 @@ for path in paths:
         if x.get("packet") == "m" and not MAINT:
             E(fn, n, "packet m is for maintainer files (run with --maintainer)")
         if inv.is_candidate_verdict(x):          # packet e: a candidate family ruled out
-            d = inv.norm_doi(x["candidate"])
-            if d not in fams:
-                W(fn, n, f"candidate {x['candidate']} is not in base/candidate-families.csv")
+            if x["candidate"].strip().lower() not in fams:
+                W(fn, n, f"candidate {x['candidate']} is not a lead in the queue")
             v = x.get("verdict", "")
             if not (v in ("not_place_data", "out_of_scope", "not_a_dataset", "restricted", "blocked") or v.startswith("duplicate_of:")):
                 E(fn, n, "verdict must be not_place_data, out_of_scope, not_a_dataset, restricted, blocked or duplicate_of:<id>")

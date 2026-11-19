@@ -6,6 +6,7 @@
     python scripts/queue.py --kind candidate --region Africa --n 15     show the 15 items you'd get, with the estimate
     python scripts/queue.py ... --n 15 --claim                same, and claim them: opens a GitHub issue assigned to you
     python scripts/queue.py --issue 23                        the items of claim #23
+    python scripts/queue.py --approaches                      every approach tried so far: result, cost, verdict, what is left
 
 Filters: --kind, --region, --category, --host, --tier, --publisher (substring, case-insensitive), --match (in the title),
 --wg (working-group request rows only), --fresh (never touched in the ledger). Items in someone's open claim are left out.
@@ -74,11 +75,16 @@ ap = argparse.ArgumentParser(add_help=False)
 for f in ("kind", "region", "category", "host", "tier", "publisher", "match", "by"):
     ap.add_argument("--" + f)
 ap.add_argument("--n", type=int); ap.add_argument("--issue", type=int)
-for f in ("claim", "wg", "fresh", "help"):
+for f in ("claim", "wg", "fresh", "help", "approaches"):
     ap.add_argument("--" + f, action="store_true")
 a = ap.parse_args()
 if a.help:
     sys.exit(__doc__)
+if a.approaches:
+    for r in load(os.path.join(inv.ROOT, "method", "approaches.csv")):
+        print(f"{r['approach']}   [{r['moves']}]   tried in {r['tried_in']}\n  how:       {r['how']}\n  result:    {r['result']}\n  cost:      {r['cost']}\n"
+              f"  verdict:   {r['verdict']}\n  left:      {r['remaining']}\n  next:      {r['next_step']}\n  continue:  {r['continue_with']}\n")
+    sys.exit()
 if a.issue:
     body = json.loads(gh("issue", "view", str(a.issue), "--json", "body,title,assignees"))
     q = {(r["kind"], r["item"]): r for r in load(os.path.join(inv.BUILD, "queue.csv"))}
@@ -128,9 +134,16 @@ elif a.n:
         print("Add --claim to take these (opens an issue assigned to you).")
 else:
     c, f = Counter(r["kind"] for r in Q), Counter(r["kind"] for r in sel)
+    st = json.load(open(os.path.join(inv.BUILD, "STATE.json"), encoding="utf-8")).get("funnel", {})
+    print(f"Stages: {st.get('leads')} leads -> {st.get('listed_unverified')} listed, unverified -> {st.get('verified')} verified "
+          f"({st.get('verified_thin')} on thin evidence) -> {st.get('specified')} fully specified (ready to write a recipe from)")
     print(f"{len(Q)} open items, {len(Q) - len(free)} in someone's claim" + (f"; {len(sel)} match your filters" if filtered else "") + "\n")
-    for k in WHAT:
+    for k in [k for k in est if k in WHAT] + [k for k in WHAT if k not in est]:
         if c[k]:
             e = est.get(k, {})
-            print(f"{k:12s} {f[k]:4d} free of {c[k]:4d}  {WHAT[k]}\n{'':12s} per item: {cost(k, 1, est)}; {e.get('yield', '')} [{e.get('basis', '')}]")
+            m, rate = e.get("minutes_per_item"), e.get("result_rate")
+            half = (f"30 min is about {30 / float(m):.0f} items" + (f", giving about {30 / float(m) * float(rate):.0f} {e.get('result_label', 'results')}" if rate else "")) if m else ""
+            print(f"{k}: {f[k]} free of {c[k]}   moves a dataset: {e.get('moves', '')}\n  you do:    {WHAT[k]}\n  produces:  {e.get('produces', '')}\n  why:       {e.get('why', '')}\n"
+                  f"  cost:      {cost(k, 1, est)} per item. {half}\n  basis:     {e.get('basis', '')}")
     print("\nSlice: --by region|category|host|tier|publisher|kind (with any filters). Carve: --kind K [filters] --n N [--claim].")
+    print("Ways of finding and verifying data that were tried before, how each did, and what is left of it: --approaches")

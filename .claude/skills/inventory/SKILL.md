@@ -9,15 +9,30 @@ You help one person decide **how much work to take**, do it, and leave **one led
 
 ## 1. Start: show the queue, let the user carve
 
-1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Make sure they're on a branch, not `main`, after `git pull --rebase origin main`.
+1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Then, without asking: `git pull --rebase origin main` and `git switch -c work/<handle>-<YYYYMMDD-HHMM>` (the user never handles branches).
 2. **`/inventory <issue number>`**: the user already has a claim. `python scripts/queue.py --issue <n>` lists its items; go to section 3.
-3. **Otherwise** run `python scripts/queue.py` and show its overview as a short table: each kind of work, how many items are free, and the per-item estimate (minutes and tokens, with what the estimate is based on; say plainly when tokens were never measured). Then ask two things: **which kind**, and **how much they want to spend** (a number of items, or a time or token budget, which you turn into a number of items with the estimate).
+3. **Otherwise** run `python scripts/queue.py` and `python scripts/queue.py --approaches`, and present the choice so a newcomer can decide by outcome. Three short parts, no jargon, no `basis` text unless asked:
+   - **Where things stand**, one line: the stages with their counts (leads → listed, unverified → verified → fully specified). Say what "fully specified" means: columns, place key and its vintage, geometry, which is what a recipe is written from.
+   - **Move datasets forward** (the queue), one table in the script's order: **Work** | **Takes a dataset from → to** | **What you end up with** (the script's `produces`, one line) | **Free** | **30 minutes buys** | **Tokens per item** (or "not measured yet").
+   - **Continue an approach that finds new leads**, one table from `--approaches`, only the rows whose `continue` is a brief (not `queue:`, `maintainer` or `closed`): **Approach** | **How it did last time** | **Verdict** | **What's left** | **Next step**. These produce leads and usually some listed datasets; they are bigger and less predictable than queue work.
+   Then one line with your suggestion and why, and ask: **which one**, and **how much they want to spend** (a number of items, or a time or token budget, which you turn into a count with the estimate). Mention that they can instead name a dataset they know.
 4. Offer slices if they want to narrow it: `python scripts/queue.py --by region --kind candidate` (also `category`, `host`, `publisher`, `tier`). Filters: `--region`, `--category`, `--host`, `--publisher`, `--tier`, `--match <title text>`, `--wg` (working-group requests), `--fresh` (never touched). Same-host items are cheaper together (one site, one licence page), so a `--host` slice is a good default suggestion for `read` and `settle`.
 5. Show what they'd get: `python scripts/queue.py --kind <k> [filters] --n <N>`. When they agree, claim it by adding `--claim`: this opens an issue assigned to them, and takes those items out of everyone else's view. Note the issue number.
 6. **"A dataset I know"** needs no claim: go straight to packet a.
 7. Note the start time. Don't read the big CSVs; use `queue.py` and `lookup.py`.
 
 Kinds and packets: `read`, `settle`, `successor` = packet b; `schema` = c; `person-read` = d; `candidate` = e; a dataset the user names = a.
+
+## 1b. Continuing an approach (instead of queue items)
+
+1. Read the approach's row in `method/approaches.csv` and its brief (the `continue` path; the same folder's `results.md` says what happened last time and what to change). Don't re-run what was already done: start from "what's left".
+2. Size it to the user's budget and say so before starting: how many searches or listings, how many records read (use the approach's cost line), and a hard stop. Keep to the brief's rules; one job, no sub-agents, metadata and pages only.
+3. Claim it: `gh issue create --label claim --assignee @me --title "[claim] approach: <name> (<handle>)" --body "<what you will do and the caps>"`. Check first that no open claim issue names the same approach.
+4. Outputs, all under `ledger/` so they merge automatically:
+   - **Leads you found but didn't read:** `ledger/leads/<YYYY-MM-DD>-<handle>-<slug>.csv` with columns `ref` (DOI or landing URL), `title`, `publisher`, `year`, `anchor` (from `method/anchors.csv`), `region`. Check each with `python scripts/lookup.py` first and leave out what's already in. They join the queue as `candidate` items after merge.
+   - **Datasets you read:** new-row records in the session's ledger file, as in section 5 (packet e).
+   - **What happened:** `ledger/notes/<YYYY-MM-DD>-<handle>-<slug>.md`: what you searched, counts (found, already known, new, read, added), precision if you can measure it, what blocked, and your verdict (scale, scale with changes, or drop, and why). A maintainer folds this into `method/approaches.csv`, which is how the next person sees how the approach is doing.
+5. The session's `meta` line uses `"kind": "approach: <name>"`. Then finish as in section 6.
 
 ## 2. Finding things
 
@@ -92,4 +107,5 @@ Verdicts: `not_place_data`, `not_a_dataset` (paper, code, slides), `out_of_scope
 
 1. `python scripts/validate.py --changed --against origin/main`. Fix every error. If it says a row was changed on main since you branched, run `lookup.py --id` for that row, reconsider your record, then `git rebase origin/main`.
 2. Tell the user in 3-5 lines: items done against items claimed, checks settled, rows added, candidates ruled out, what was blocked, anything that looked wrong in an existing row, and what the session took against the estimate.
-3. Suggest: `git add ledger/ && git commit -m "Inventory: <kind> (<n> items)"`, push, and `gh pr create --title "Inventory: <kind>, <n> items" --body "Closes #<claim issue>. <your summary>"`. Do it only if the user asks. No AI attribution lines.
+3. Ask one question: **"Submit this?"** On yes, do all of it yourself: `git add ledger/`, `git commit -m "Inventory: <kind> (<n> items)"`, `git push -u origin HEAD`, `gh pr create --title "Inventory: <kind>, <n> items" --body "Closes #<claim issue>. <your summary>"`. No AI attribution lines anywhere. Tell the user the PR link and that GitHub will check it and merge it by itself within a few minutes if it passes; nothing more is needed from them.
+4. If the user comes back saying the check failed: `gh pr checks`, read the failing log (`gh run view --log-failed`), fix the ledger file, commit and push to the same branch.

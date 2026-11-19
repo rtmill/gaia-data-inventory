@@ -121,15 +121,30 @@ for kind, (pk, rs) in KINDS.items():
                       "touched": str(touched.get(r["id"], 0)), "hint": hint(r)})
 # candidate families: drop those already in the inventory (any DOI in any field) or ruled out in the ledger
 fam = list(csv.DictReader(open(os.path.join(inv.ROOT, "base", "candidate-families.csv"), encoding="utf-8-sig")))
+import glob
+for lp in sorted(glob.glob(os.path.join(inv.LEDGER, "leads", "*.csv"))):   # leads contributors found by continuing an approach
+    for n, l in enumerate(csv.DictReader(open(lp, encoding="utf-8-sig"))):
+        if l.get("ref"):
+            fam.append({"doi": l["ref"].strip(), "all_dois": l["ref"].strip(), "title": l.get("title", ""), "publisher": l.get("publisher", ""), "year": l.get("year", ""),
+                        "anchors": l.get("anchor", ""), "region": l.get("region", ""), "n": "1", "rank": str(100000 + n), "source": os.path.basename(lp)})
+key = lambda ref: inv.norm_doi(ref) or ref.strip().lower().rstrip("/")
+known_urls = {u.strip().lower().rstrip("/") for r in rows for u in (r.get("site_url", ""), r.get("access_url", "")) if u.strip()}
 inv_dois = set()
 for r in rows:
     inv_dois |= inv.all_dois(" ".join(r.get(k, "") for k in ("persistent_id", "site_url", "access_url", "evidence_url", "notes", "partB_pages_read", "schema_source")))
-ruled = {inv.norm_doi(v["candidate"]) for v in verdicts}
-fam_open = [f for f in fam if not (inv.all_dois(f["all_dois"] or f["doi"]) & (inv_dois | ruled))]
+ruled = {key(v["candidate"]) for v in verdicts}
+seen_ref = set()
+fam_open = []
+for f in fam:
+    k = key(f["doi"])
+    if k in seen_ref or k in ruled or k in known_urls or (inv.all_dois(f["all_dois"] or f["doi"]) & (inv_dois | ruled)):
+        continue
+    seen_ref.add(k)
+    fam_open.append(f)
 for f in sorted(fam_open, key=lambda f: int(f["rank"] or 9999)):
     queue.append({"kind": "candidate", "item": f["doi"], "packet": "e", "tier": "", "title": f["title"], "publisher": f["publisher"],
                   "host": f["doi"].split("/")[0], "region": f["region"], "category": f["anchors"].split(";")[0], "wg_request": "",
-                  "open_checks": "", "touched": "0", "hint": f"{f['n']} DOI(s) in the family; {f['year']}"})
+                  "open_checks": "", "touched": "0", "hint": (f"lead from {f['source']}" if f.get("source") else f"{f['n']} DOI(s) in the family; {f['year']}")})
 put("build/queue.csv", csv_text(queue, QC))
 rej = [{"doi": v["candidate"], "verdict": v.get("verdict", ""), "reason": v.get("reason", ""), "by": v.get("by", ""), "file": v["_file"]} for v in verdicts]
 put("build/candidates-rejected.csv", csv_text(rej, ["doi", "verdict", "reason", "by", "file"]))
@@ -145,12 +160,16 @@ state = {"asof": asof, "rows": len(rows), "tiers": c, "verified": c["Gold"] + c[
          "file_verified": sum(1 for r in rows if r.get("verification_level", "").startswith("file-verified")),
          "with_schema": sum(1 for r in rows if r.get("schema_source")), "with_key_vintage": sum(1 for r in rows if r.get("place_key_vintage")),
          "ledger_files": len(files), "contributors": contributors, "queue": dict(sorted(ob.items())), "candidates_ruled_out": len(rej)}
+spec = sum(1 for r in live if r["verify_tier"] in ("Gold", "Silver") and r.get("place_key_system") and r.get("columns_found") and (r.get("geometry_found") or r.get("geometry_source")))
+state["funnel"] = {"leads": ob["candidate"], "listed_unverified": c["Bronze"] + c["Browser needed"] + c["Failed"], "verified": c["Gold"] + c["Silver"],
+                   "verified_thin": ob["settle"], "specified": spec}
 put("build/STATE.json", json.dumps(state, indent=1) + "\n")
 block = (f"**As of {asof}:** {state['rows']} datasets assessed, **{state['verified']} verified** (Gold {c['Gold']}, Silver {c['Silver']}), "
          f"Bronze {c['Bronze']}, Browser needed {c['Browser needed']}, Failed {c['Failed']}. {state['file_verified']} file-verified; "
          f"{state['with_schema']} with a schema record; {state['with_key_vintage']} state their place-key vintage.\n\n"
-         f"**Open queue ({len(queue)} items):** " + ", ".join(f"{n} {k}" for k, n in state["queue"].items())
-         + f". Slice it with `python scripts/queue.py`. **Ledger:** {len(files)} contribution file{'s' if len(files) != 1 else ''}"
+         f"**Where things stand:** {state['funnel']['leads']} leads not yet looked at → {state['funnel']['listed_unverified']} listed but unverified → "
+         f"{state['verified']} verified ({state['funnel']['verified_thin']} of them on thin evidence) → {spec} fully specified (columns, place key and vintage, geometry: what a recipe needs). "
+         f"Open work: {len(queue)} items; see it with `python scripts/queue.py`. **Ledger:** {len(files)} contribution file{'s' if len(files) != 1 else ''}"
          + (f" from {len(contributors)} contributor{'s' if len(contributors) != 1 else ''}." if contributors else "."))
 rp = os.path.join(inv.ROOT, "README.md")
 readme = open(rp, encoding="utf-8").read()

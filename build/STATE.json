@@ -15,12 +15,19 @@
  "ledger_files": 0,
  "contributors": [],
  "queue": {
-  "candidate": 276,
+  "candidate": 272,
   "person-read": 24,
   "read": 101,
   "schema": 50,
   "settle": 97,
   "successor": 13
  },
- "candidates_ruled_out": 0
+ "candidates_ruled_out": 0,
+ "funnel": {
+  "leads": 272,
+  "listed_unverified": 154,
+  "verified": 628,
+  "verified_thin": 97,
+  "specified": 15
+ }
 }

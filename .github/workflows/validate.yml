@@ -1,11 +1,19 @@
 name: Validate contribution
 
+# Checks every pull request. A pull request that only adds or changes files under ledger/ and passes is merged
+# automatically, and the inventory is rebuilt. Anything else waits for a maintainer.
 on:
   pull_request:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: contributions
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -21,3 +29,17 @@ jobs:
         run: python scripts/validate.py --changed --against origin/${{ github.base_ref }}
       - name: The whole ledger still replays
         run: python scripts/build.py
+      - name: Merge if it is a ledger-only contribution
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          OTHER=$(gh pr diff "$PR" --name-only | grep -v '^ledger/' || true)
+          if [ -n "$OTHER" ]; then
+            echo "Not merging automatically: this PR also changes files outside ledger/ (a maintainer reviews those):"
+            echo "$OTHER"
+            exit 0
+          fi
+          gh pr merge "$PR" --squash --delete-branch
+          gh workflow run build.yml --ref main

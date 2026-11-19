@@ -5,27 +5,24 @@ Public geospatial datasets for linking place to health, assessed for [Gaia](http
 <!-- state:start -->
 **As of 2026-11-18:** 805 datasets assessed, **628 verified** (Gold 157, Silver 471), Bronze 105, Browser needed 20, Failed 29. 15 file-verified; 35 with a schema record; 10 state their place-key vintage.
 
-**Open queue (561 items):** 276 candidate, 24 person-read, 101 read, 50 schema, 97 settle, 13 successor. Slice it with `python scripts/queue.py`. **Ledger:** 0 contribution files.
+**Where things stand:** 272 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified (columns, place key and vintage, geometry: what a recipe needs). Open work: 557 items; see it with `python scripts/queue.py`. **Ledger:** 0 contribution files.
 <!-- state:end -->
 
 Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/inventory.html)**.
 
 ## Contribute
 
-You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert). There is one queue of open work; you choose what and how much to take.
+You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
 
-1. **Clone and start Claude Code** (Sonnet is enough):
+1. Clone the repo and start Claude Code in it:
    ```bash
-   git clone https://github.com/rtmill/gaia-data-inventory && cd gaia-data-inventory
-   git switch -c work/<your-handle>
+   git clone https://github.com/rtmill/gaia-data-inventory
+   cd gaia-data-inventory
    claude
    ```
-2. **Type `/inventory`.** Claude shows the queue: each kind of work, how many items are open, and what one item costs in minutes and tokens (from earlier runs). Tell it which kind and how much you want: a number of items, or a time or token budget. You can narrow by region, topic, publisher or site.
-3. **Claim it.** When you agree to the list, Claude opens a GitHub issue titled `[claim] …`, assigned to you, listing your items. That is the claim: those items are hidden from everyone else until the issue closes.
-4. **Claude does the work** and writes one file under `ledger/`.
-5. **Open a pull request** with `Closes #<your claim issue>` (Claude offers to do this). Checks run automatically; when they're green, merge it. The inventory rebuilds itself, your claim closes, and anything you didn't finish goes back to the queue.
+2. Type `/inventory` and answer its questions: which kind of work, how much of it, and at the end whether to submit.
 
-Just looking, without Claude: `python scripts/queue.py` (add `--help` for slicing and claiming by hand). More detail, the rules, and what to do if a check fails: [CONTRIBUTING.md](CONTRIBUTING.md). Suggesting a dataset without any of this: [open an issue](../../issues/new?template=suggest-dataset.yml).
+That's all you do. Claude shows you the open work and what it costs, reserves the items you pick, does the work, and submits it; the checks, the merge and the rebuild are automatic. Details: [CONTRIBUTING.md](CONTRIBUTING.md). To suggest a dataset without any of this, [open an issue](../../issues/new?template=suggest-dataset.yml).
 
 ## How it works
 
