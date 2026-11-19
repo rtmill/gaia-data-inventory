@@ -1,6 +1,19 @@
 # Gaia data inventory
 
-Public geospatial datasets for linking place to health, assessed for [Gaia](https://github.com/OHDSI/gaiaDB) (OHDSI GIS working group). Each dataset carries checks (link, licence, years, spatial unit, access, place key, format) with the evidence URL behind every value. This is a list of **prospective** sources: only rows marked `in_gaia` are in the Gaia catalog so far.
+**What this is.** Health researchers who want to link where patients live to their surroundings (air quality, heat, deprivation, distance to care) need public datasets that are keyed to places. [Gaia](https://github.com/OHDSI/GIS), the OHDSI GIS working group's toolkit, loads such datasets and joins them to patient locations. But before a dataset can be loaded, someone has to find it and establish the basics: is it still published, what is its licence, which years and which geography does it cover, how do you get it, and what column ties it to a map. This repository is the working group's shared record of that: every public place-based dataset we have looked at, what has been confirmed about it, and the link where each fact was read.
+
+It is a list of **prospects**, not the Gaia catalog. Only a few of these datasets can be loaded into Gaia today.
+
+**Why it exists as its own repository: so many people can chip away at it.** Finding and checking datasets is slow, and most of the reading is done by Claude, which costs tokens. No one person has enough of either. So the work is cut into small pieces that anyone in the working group can pick up for ten minutes or an afternoon, and the repository is built around making that safe:
+
+- **Every fact carries its link.** Nothing is entered from memory, a person's or an AI's, so anyone can check anyone else's work.
+- **Nobody edits the list by hand.** A contribution is a small file of changes. The list is rebuilt from the starting point plus every contribution, automatically. Two people can't overwrite each other, and the record of who confirmed what, from where, is kept.
+- **Open work is laid out with what it costs and what it produces,** so you can see where your time or tokens do the most and take exactly as much as you want.
+- **What was tried is written down:** each way of finding data, how well it worked, and what's left of it, so the next person continues instead of starting over.
+
+## Where it stands
+
+A dataset moves through stages: a **lead** (might be a dataset) → **listed** (in the inventory, not yet checked) → **verified** (licence, years, geography and access confirmed, each with its link) → **fully specified** (columns, place key and its vintage, geometry: what a Gaia loading recipe is written from).
 
 <!-- state:start -->
 **As of 2026-11-18:** 805 datasets assessed, **628 verified** (Gold 157, Silver 471), Bronze 105, Browser needed 20, Failed 29. 15 file-verified; 35 with a schema record; 10 state their place-key vintage.
@@ -12,7 +25,7 @@ Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/invent
 
 ## Contribute
 
-You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
+Pick a piece of open work, let Claude do the reading, approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
 
 1. Clone the repo and start Claude Code in it:
    ```bash
