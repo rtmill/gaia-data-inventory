@@ -1,0 +1,2 @@
+{"meta": {"by": "rtmill", "kind": "read", "items": 1, "minutes": 1, "fetches": 0, "tokens": null, "claim": null}}
+{"id": "us_census_mdi", "by": "rtmill", "packet": "b", "ev": "https://www.census.gov/", "note": "TEST overlap run 2: must fail", "set": {"chk_link_live_detail": "overlap test run 2"}}
