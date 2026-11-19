@@ -3,23 +3,23 @@
  "rows": 805,
  "tiers": {
   "Gold": 157,
-  "Silver": 471,
-  "Bronze": 105,
+  "Silver": 472,
+  "Bronze": 104,
   "Browser needed": 20,
   "Failed": 29
  },
- "verified": 628,
+ "verified": 629,
  "file_verified": 15,
  "with_schema": 35,
  "with_key_vintage": 10,
- "ledger_files": 1,
+ "ledger_files": 2,
  "contributors": [
   "rtmill"
  ],
  "queue": {
   "candidate": 269,
   "person-read": 24,
-  "read": 101,
+  "read": 100,
   "schema": 50,
   "settle": 97,
   "successor": 13
@@ -27,8 +27,8 @@
  "candidates_ruled_out": 3,
  "funnel": {
   "leads": 269,
-  "listed_unverified": 154,
-  "verified": 628,
+  "listed_unverified": 153,
+  "verified": 629,
   "verified_thin": 97,
   "specified": 15
  }
