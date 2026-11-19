@@ -33,6 +33,7 @@ A dataset moves through stages: **lead** (might be a dataset) → **listed** (in
 
 | Work | Takes a dataset from → to | What you end up with |
 |---|---|---|
+| `explore` | nothing → lead | New leads for the queue, found by continuing a search approach or designing a new one |
 | `candidate` | lead → listed | New datasets in the inventory with first checks; duds ruled out for good |
 | `read` | listed → verified | Unverified datasets verified from the publisher's page |
 | `person-read` | listed → verified | Datasets on sites that block scripts, checked by you in your browser (almost no tokens) |
@@ -41,7 +42,7 @@ A dataset moves through stages: **lead** (might be a dataset) → **listed** (in
 | `schema` | verified → fully specified | Column list, place key, its geography and vintage, geometry |
 | a dataset you know | nothing → listed | One new dataset, checked (no claim needed) |
 
-**Or continue an approach that finds new leads.** `python scripts/queue.py --approaches` lists every way of finding data that has been tried (publisher fan-out, place-key search, targeted gap sweeps, DataCite by topic, priority-source listings): how it did, what it cost, the verdict, and what's left of it. Pick one and a budget; Claude continues from where it stopped and hands back new leads (which join the queue), any datasets it read, and a short note on how the approach performed. Approaches marked `maintainer` need a brief written first.
+**`explore` is how new leads get found.** Choosing it shows the approaches tried so far (publisher fan-out, place-key search, targeted gap sweeps, DataCite by topic, priority-source listings): how each did, the verdict, and what's left. Pick one to continue from where it stopped, or work out a new one with Claude. You set the budget. You hand back new leads (which join the queue), any datasets read along the way, and a short note on how the approach performed. Without Claude: `python scripts/queue.py --approaches`.
 
 Costs start from measured runs (`method/estimates.csv`) and update from what sessions here actually take: each ledger file's first line records items, minutes and fetches, and tokens if you give Claude your `/cost` total.
 

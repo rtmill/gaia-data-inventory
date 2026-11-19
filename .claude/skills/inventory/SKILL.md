@@ -11,11 +11,11 @@ You help one person decide **how much work to take**, do it, and leave **one led
 
 1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Then, without asking: `git pull --rebase origin main` and `git switch -c work/<handle>-<YYYYMMDD-HHMM>` (the user never handles branches).
 2. **`/inventory <issue number>`**: the user already has a claim. `python scripts/queue.py --issue <n>` lists its items; go to section 3.
-3. **Otherwise** run `python scripts/queue.py` and `python scripts/queue.py --approaches`, and present the choice so a newcomer can decide by outcome. Three short parts, no jargon, no `basis` text unless asked:
+3. **Otherwise** run `python scripts/queue.py` (read all of its output; don't truncate it) and present the choice so a newcomer can decide by outcome. Keep it to this, with no jargon and no `basis` text unless asked:
    - **Where things stand**, one line: the stages with their counts (leads → listed, unverified → verified → fully specified). Say what "fully specified" means: columns, place key and its vintage, geometry, which is what a recipe is written from.
-   - **Move datasets forward** (the queue), one table in the script's order: **Work** | **Takes a dataset from → to** | **What you end up with** (the script's `produces`, one line) | **Free** | **30 minutes buys** | **Tokens per item** (or "not measured yet").
-   - **Continue an approach that finds new leads**, one table from `--approaches`, only the rows whose `continue` is a brief (not `queue:`, `maintainer` or `closed`): **Approach** | **How it did last time** | **Verdict** | **What's left** | **Next step**. These produce leads and usually some listed datasets; they are bigger and less predictable than queue work.
-   Then one line with your suggestion and why, and ask: **which one**, and **how much they want to spend** (a number of items, or a time or token budget, which you turn into a count with the estimate). Mention that they can instead name a dataset they know.
+   - **One table of everything they can choose**, in the script's order, `explore` included as an ordinary row: **Work** | **Takes a dataset from → to** | **What you end up with** | **Available** | **30 minutes buys** | **Tokens per item** (or "not measured yet"; for `explore`, "you set the budget").
+   - One line with your suggestion and why. Then ask: **which one**, and **how much they want to spend** (a number of items, or a time or token budget, which you turn into a count with the estimate). Mention that they can instead name a dataset they know.
+   Do **not** list the approaches here. Only if the user picks `explore`, go to section 1b.
 4. Offer slices if they want to narrow it: `python scripts/queue.py --by region --kind candidate` (also `category`, `host`, `publisher`, `tier`). Filters: `--region`, `--category`, `--host`, `--publisher`, `--tier`, `--match <title text>`, `--wg` (working-group requests), `--fresh` (never touched). Same-host items are cheaper together (one site, one licence page), so a `--host` slice is a good default suggestion for `read` and `settle`.
 5. Show what they'd get: `python scripts/queue.py --kind <k> [filters] --n <N>`. When they agree, claim it by adding `--claim`: this opens an issue assigned to them, and takes those items out of everyone else's view. Note the issue number.
 6. **"A dataset I know"** needs no claim: go straight to packet a.
@@ -23,16 +23,18 @@ You help one person decide **how much work to take**, do it, and leave **one led
 
 Kinds and packets: `read`, `settle`, `successor` = packet b; `schema` = c; `person-read` = d; `candidate` = e; a dataset the user names = a.
 
-## 1b. Continuing an approach (instead of queue items)
+## 1b. Explore: continue an approach, or design one
 
-1. Read the approach's row in `method/approaches.csv` and its brief (the `continue` path; the same folder's `results.md` says what happened last time and what to change). Don't re-run what was already done: start from "what's left".
-2. Size it to the user's budget and say so before starting: how many searches or listings, how many records read (use the approach's cost line), and a hard stop. Keep to the brief's rules; one job, no sub-agents, metadata and pages only.
-3. Claim it: `gh issue create --label claim --assignee @me --title "[claim] approach: <name> (<handle>)" --body "<what you will do and the caps>"`. Check first that no open claim issue names the same approach.
-4. Outputs, all under `ledger/` so they merge automatically:
+1. Run `python scripts/queue.py --approaches` and show its rows as one table: **Approach** | **How it did last time** | **Verdict** | **What's left**. Add a last row: **"Something new"**: work out a new way of finding data together. Ask which, and the budget if not given yet.
+2. **Continuing one:** `python scripts/queue.py --approach "<name>"` gives the full row. Read its brief (the `continue` path) and the same folder's `results.md` (what happened last time and what to change). Start from "what's left"; don't re-run what was done.
+3. **Something new:** ask what they have in mind (a source, a kind of data, a place, a search trick). Run `python scripts/queue.py --approaches --all` to check it isn't a variant of something tried or closed, and say so if it is. Then write a short brief with them before doing anything: the question the run answers, where it will look, what counts as a hit, the caps, and what result would mean "worth scaling". Save it as the first part of the run's note (step 6).
+4. Size the run to the budget and say so before starting: how many searches or listings, how many records read (use the approach's cost line where there is one), and a hard stop. Rules for every run: one job, no sub-agents, metadata and pages only (no data files), no sign-ins or bot-check workarounds, 1 request per second per host.
+5. Claim it: check that no open `claim` issue names the same approach, then `gh issue create --label claim --assignee @me --title "[claim] explore: <name> (<handle>)" --body "<what you will do and the caps>"`.
+6. Outputs, all under `ledger/` so they merge automatically:
    - **Leads you found but didn't read:** `ledger/leads/<YYYY-MM-DD>-<handle>-<slug>.csv` with columns `ref` (DOI or landing URL), `title`, `publisher`, `year`, `anchor` (from `method/anchors.csv`), `region`. Check each with `python scripts/lookup.py` first and leave out what's already in. They join the queue as `candidate` items after merge.
    - **Datasets you read:** new-row records in the session's ledger file, as in section 5 (packet e).
-   - **What happened:** `ledger/notes/<YYYY-MM-DD>-<handle>-<slug>.md`: what you searched, counts (found, already known, new, read, added), precision if you can measure it, what blocked, and your verdict (scale, scale with changes, or drop, and why). A maintainer folds this into `method/approaches.csv`, which is how the next person sees how the approach is doing.
-5. The session's `meta` line uses `"kind": "approach: <name>"`. Then finish as in section 6.
+   - **What happened:** `ledger/notes/<YYYY-MM-DD>-<handle>-<slug>.md`: the brief (for a new approach), what you searched, counts (found, already known, new, read, added), precision if you can measure it, what blocked, and your verdict (scale, scale with changes, or drop, and why). A maintainer folds this into `method/approaches.csv`, which is how the next person sees how the approach is doing.
+7. The session's `meta` line uses `"kind": "explore: <name>"`. Then finish as in section 6.
 
 ## 2. Finding things
 

@@ -72,7 +72,7 @@ def cost(kind, n, est):
 
 
 ap = argparse.ArgumentParser(add_help=False)
-for f in ("kind", "region", "category", "host", "tier", "publisher", "match", "by"):
+for f in ("kind", "region", "category", "host", "tier", "publisher", "match", "by", "approach"):
     ap.add_argument("--" + f)
 ap.add_argument("--n", type=int); ap.add_argument("--issue", type=int)
 for f in ("claim", "wg", "fresh", "help", "approaches"):
@@ -80,8 +80,15 @@ for f in ("claim", "wg", "fresh", "help", "approaches"):
 a = ap.parse_args()
 if a.help:
     sys.exit(__doc__)
-if a.approaches:
-    for r in load(os.path.join(inv.ROOT, "method", "approaches.csv")):
+if a.approaches or a.approach:
+    AP = load(os.path.join(inv.ROOT, "method", "approaches.csv"))
+    if a.approaches:      # short list of what can be continued now; --approach "<name>" for one in full, --approaches --all for every row
+        for r in AP:
+            if "--all" in sys.argv or r["continue_with"].startswith("brief:"):
+                print(f"{r['approach']} | last time: {r['result'][:110]} | verdict: {r['verdict'][:70]} | left: {r['remaining'][:120]}")
+        print('One in full: --approach "<name>". Every approach, including those done through the queue, closed, or needing a maintainer brief: --approaches --all')
+        sys.exit()
+    for r in [r for r in AP if a.approach.lower() in r["approach"].lower()]:
         print(f"{r['approach']}   [{r['moves']}]   tried in {r['tried_in']}\n  how:       {r['how']}\n  result:    {r['result']}\n  cost:      {r['cost']}\n"
               f"  verdict:   {r['verdict']}\n  left:      {r['remaining']}\n  next:      {r['next_step']}\n  continue:  {r['continue_with']}\n")
     sys.exit()
@@ -138,6 +145,13 @@ else:
     print(f"Stages: {st.get('leads')} leads -> {st.get('listed_unverified')} listed, unverified -> {st.get('verified')} verified "
           f"({st.get('verified_thin')} on thin evidence) -> {st.get('specified')} fully specified (ready to write a recipe from)")
     print(f"{len(Q)} open items, {len(Q) - len(free)} in someone's claim" + (f"; {len(sel)} match your filters" if filtered else "") + "\n")
+    nap = sum(1 for r in load(os.path.join(inv.ROOT, "method", "approaches.csv")) if r["continue_with"].startswith("brief:"))
+    print(f"explore: {nap} approaches with work left, or design a new one   moves: nothing -> lead (and often on to listed)\n"
+          f"  you do:    Continue a way of searching that was tried before, from where it stopped, or work out a new one with Claude\n"
+          f"  produces:  New leads for the queue, some datasets listed along the way, and a note on how well the approach worked\n"
+          f"  why:       The lead pool is finite ({c['candidate']} left); this is where new datasets come from once it is used up\n"
+          f"  cost:      Open-ended: you set the budget and Claude sizes the run to it. Past runs added 20 to 26 datasets each\n"
+          f"  list them: python scripts/queue.py --approaches")
     for k in [k for k in est if k in WHAT] + [k for k in WHAT if k not in est]:
         if c[k]:
             e = est.get(k, {})
@@ -146,4 +160,3 @@ else:
             print(f"{k}: {f[k]} free of {c[k]}   moves a dataset: {e.get('moves', '')}\n  you do:    {WHAT[k]}\n  produces:  {e.get('produces', '')}\n  why:       {e.get('why', '')}\n"
                   f"  cost:      {cost(k, 1, est)} per item. {half}\n  basis:     {e.get('basis', '')}")
     print("\nSlice: --by region|category|host|tier|publisher|kind (with any filters). Carve: --kind K [filters] --n N [--claim].")
-    print("Ways of finding and verifying data that were tried before, how each did, and what is left of it: --approaches")
