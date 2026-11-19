@@ -1,0 +1,2 @@
+{"meta": {"by": "rtmill", "kind": "read", "items": 1, "minutes": 1, "fetches": 0, "tokens": null, "claim": null}}
+{"id": "global_gdl_shdi", "by": "rtmill", "packet": "b", "ev": "https://globaldatalab.org/shdi/", "note": "TEST bad file: must fail", "set": {"chk_unit": "good", "verify_tier": "Gold"}}
