@@ -4,33 +4,33 @@
  "tiers": {
   "Gold": 157,
   "Silver": 471,
-  "Bronze": 105,
+  "Bronze": 106,
   "Browser needed": 20,
-  "Failed": 29
+  "Failed": 28
  },
  "verified": 628,
  "file_verified": 15,
- "with_schema": 35,
+ "with_schema": 36,
  "with_key_vintage": 10,
- "ledger_files": 5,
+ "ledger_files": 10,
  "contributors": [
   "rtmill"
  ],
  "queue": {
-  "candidate": 269,
+  "candidate": 270,
   "person-read": 24,
   "read": 99,
-  "schema": 50,
-  "settle": 97,
-  "successor": 13
+  "schema": 49,
+  "settle": 95,
+  "successor": 12
  },
- "candidates_ruled_out": 3,
+ "candidates_ruled_out": 6,
  "funnel": {
-  "leads": 269,
+  "leads": 270,
   "listed_unverified": 154,
   "verified": 628,
-  "verified_thin": 97,
-  "specified": 15,
+  "verified_thin": 95,
+  "specified": 16,
   "recipe_drafted": 0,
   "in_gaia": 35
  }
