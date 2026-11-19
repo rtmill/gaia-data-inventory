@@ -25,7 +25,7 @@ Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/invent
 
 ## Contribute
 
-Choose what to work on and how much, let Claude do the reading, approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
+Choose what to work on and how much, let Claude do the reading on your own Claude usage (the tokens are your contribution), approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
 
 1. Clone the repo and start Claude Code in it:
    ```bash
