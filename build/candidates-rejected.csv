@@ -1,1 +1,4 @@
 doi,verdict,reason,by,file
+10.48320/46174381-1660-4354-a3a5-0935f4583dee,restricted,Discuss Data landing page states 'Restricted access' for this facility-locations dataset,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl
+10.6084/m9.figshare.14270734,not_place_data,figshare record holds a paper's figure (jpg) and one small table (xls) for a qualitative case study; no place-keyed data,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl
+10.7281/t1/xz0cgj,blocked,Johns Hopkins data repository sits behind a Cloudflare block page for scripted requests; person-read material,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl

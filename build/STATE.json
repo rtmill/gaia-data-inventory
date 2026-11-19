@@ -12,19 +12,21 @@
  "file_verified": 15,
  "with_schema": 35,
  "with_key_vintage": 10,
- "ledger_files": 0,
- "contributors": [],
+ "ledger_files": 1,
+ "contributors": [
+  "rtmill"
+ ],
  "queue": {
-  "candidate": 272,
+  "candidate": 269,
   "person-read": 24,
   "read": 101,
   "schema": 50,
   "settle": 97,
   "successor": 13
  },
- "candidates_ruled_out": 0,
+ "candidates_ruled_out": 3,
  "funnel": {
-  "leads": 272,
+  "leads": 269,
   "listed_unverified": 154,
   "verified": 628,
   "verified_thin": 97,

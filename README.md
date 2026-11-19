@@ -18,7 +18,7 @@ A dataset moves through stages: a **lead** (might be a dataset) → **listed** (
 <!-- state:start -->
 **As of 2026-11-18:** 805 datasets assessed, **628 verified** (Gold 157, Silver 471), Bronze 105, Browser needed 20, Failed 29. 15 file-verified; 35 with a schema record; 10 state their place-key vintage.
 
-**Where things stand:** 272 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified (columns, place key and vintage, geometry: what a recipe needs). Open work: 557 items; see it with `python scripts/queue.py`. **Ledger:** 0 contribution files.
+**Where things stand:** 269 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified (columns, place key and vintage, geometry: what a recipe needs). Open work: 554 items; see it with `python scripts/queue.py`. **Ledger:** 1 contribution file from 1 contributor.
 <!-- state:end -->
 
 Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/inventory.html)**.
