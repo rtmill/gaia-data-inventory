@@ -1,0 +1,2 @@
+{"meta": {"by": "rtmill", "kind": "read", "items": 1, "minutes": 1, "fetches": 0, "tokens": null, "claim": null}}
+{"id": "us_cdc_svi", "by": "rtmill", "packet": "b", "ev": "https://www.atsdr.cdc.gov/place-health/php/svi/index.html", "note": "TEST bad values", "set": {"chk_unit": "good", "verify_tier": "Gold"}}
