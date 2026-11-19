@@ -4,7 +4,7 @@
 
 It is a list of **prospects**, not the Gaia catalog. Only a few of these datasets can be loaded into Gaia today.
 
-**Why it exists as its own repository: so many people can chip away at it.** Finding and checking datasets is slow, and most of the reading is done by Claude, which costs tokens. No one person has enough of either. So the work is cut into small pieces that anyone in the working group can pick up for ten minutes or an afternoon, and the repository is built around making that safe:
+**This is a crowdsourcing effort: divide and conquer.** Finding and checking datasets is slow, and most of the reading is done by Claude, which costs tokens. No one person has enough of either. So the working group shares it out: anyone can take as much or as little of the open work as they choose, for ten minutes or an afternoon. That is why this is its own repository, and it is built around making shared work safe:
 
 - **Every fact carries its link.** Nothing is entered from memory, a person's or an AI's, so anyone can check anyone else's work.
 - **Nobody edits the list by hand.** A contribution is a small file of changes. The list is rebuilt from the starting point plus every contribution, automatically. Two people can't overwrite each other, and the record of who confirmed what, from where, is kept.
@@ -25,7 +25,7 @@ Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/invent
 
 ## Contribute
 
-Pick a piece of open work, let Claude do the reading, approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
+Choose what to work on and how much, let Claude do the reading, approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
 
 1. Clone the repo and start Claude Code in it:
    ```bash

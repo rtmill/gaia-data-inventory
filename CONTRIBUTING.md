@@ -1,5 +1,7 @@
 # Contributing
 
+The inventory is crowdsourced: divide and conquer. You take whatever share of the open work you choose, Claude does the reading, and what you submit is merged into the shared list automatically.
+
 > **This assumes:** (1) you have Claude Code, the `gh` CLI signed in, and push access to this repo (ask Robert); (2) you add **ledger files**, never edits to the CSVs in `base/` or `build/`; (3) every value you add was read on the publisher's page, its repository record or its metadata record, and that URL is kept as evidence.
 
 ## What you do

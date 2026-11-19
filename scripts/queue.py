@@ -68,8 +68,8 @@ def cost(kind, n, est):
     e = est.get(kind, {})
     m, t = e.get("minutes_per_item"), e.get("tokens_per_item")
     g = e.get("tokens_guess")
-    tok = f"about {float(t) * n / 1000:.0f}k tokens (measured)" if t else (f"roughly {float(g) * n / 1000:.0f}k tokens (a guess, not measured yet)" if g else "tokens not measured yet")
-    return tok + (f", about {float(m) * n:.3g} min of Claude working" if m else "")
+    tok = "almost no tokens" if t and float(t) == 0 else f"about {float(t) * n / 1000:.0f}k tokens (measured)" if t else (f"roughly {float(g) * n / 1000:.0f}k tokens (a guess, not measured yet)" if g else "tokens not measured yet")
+    return tok + (f", about {float(m) * n:.3g} min of " + ("your own time" if kind == "person-read" else "Claude working") if m else "")
 
 
 ap = argparse.ArgumentParser(add_help=False)
@@ -157,7 +157,7 @@ else:
         if c[k]:
             e = est.get(k, {})
             m, rate = e.get("minutes_per_item"), e.get("result_rate")
-            half = (f"30 min is about {30 / float(m):.0f} items" + (f", giving about {30 / float(m) * float(rate):.0f} {e.get('result_label', 'results')}" if rate else "") + (f" ({e['rate_note']})" if e.get("rate_note") else "")) if m else ""
+            half = (f"10 items: about {10 * float(rate):.0f} {e.get('result_label', 'results')}" + (f" ({e['rate_note']})" if e.get("rate_note") else "") + ".") if rate else ""
             print(f"{k}: {f[k]} free of {c[k]}   moves a dataset: {e.get('moves', '')}\n  you do:    {WHAT[k]}\n  produces:  {e.get('produces', '')}\n  why:       {e.get('why', '')}\n"
                   f"  cost:      {cost(k, 1, est)} per item. All {c[k]}: {cost(k, c[k], est)}. {half}\n  basis:     {e.get('basis', '')}"
                   + (f"\n  maintainers suggest this now: {e['suggest']}" if e.get("suggest") else ""))
