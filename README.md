@@ -29,7 +29,7 @@ Each kind of work you can take on moves datasets one step along this path. Most 
 <!-- state:start -->
 **As of 2026-11-19:** 805 datasets assessed, **628 verified** (Gold 157, Silver 471), Bronze 105, Browser needed 20, Failed 29. 15 file-verified; 35 with a schema record; 10 state their place-key vintage.
 
-**Where things stand:** 269 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified → 0 with a draft recipe → 35 in the Gaia catalog. Open work: 552 items; see it with `python scripts/queue.py`. **Ledger:** 5 contribution files from 1 contributor.
+**Where things stand:** 269 leads not yet looked at → 154 listed but unverified → 628 verified (95 of them on thin evidence) → 15 fully specified → 0 with a draft recipe → 35 in the Gaia catalog. Open work: 550 items; see it with `python scripts/queue.py`. **Ledger:** 6 contribution files from 1 contributor.
 <!-- state:end -->
 
 Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/inventory.html)**.

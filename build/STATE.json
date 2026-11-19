@@ -12,7 +12,7 @@
  "file_verified": 15,
  "with_schema": 35,
  "with_key_vintage": 10,
- "ledger_files": 5,
+ "ledger_files": 6,
  "contributors": [
   "rtmill"
  ],
@@ -21,7 +21,7 @@
   "person-read": 24,
   "read": 99,
   "schema": 50,
-  "settle": 97,
+  "settle": 95,
   "successor": 13
  },
  "candidates_ruled_out": 3,
@@ -29,7 +29,7 @@
   "leads": 269,
   "listed_unverified": 154,
   "verified": 628,
-  "verified_thin": 97,
+  "verified_thin": 95,
   "specified": 15,
   "recipe_drafted": 0,
   "in_gaia": 35
