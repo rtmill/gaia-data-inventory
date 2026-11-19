@@ -1,0 +1,171 @@
+{
+ "id": "us_fnai_florida_managed_areas",
+ "schema_source": "https://www.fnai.org/shapefiles/flma_meta.htm",
+ "route": "FGDC/ArcGIS metadata HTML published beside the download (flma_meta.htm)",
+ "columns": [
+  {
+   "name": "OBJECTID",
+   "type": "OID",
+   "meaning": "Internal feature number"
+  },
+  {
+   "name": "Shape",
+   "type": "Geometry",
+   "meaning": "Polygon geometry"
+  },
+  {
+   "name": "MA_ID",
+   "type": "Double",
+   "meaning": "Managed Area ID"
+  },
+  {
+   "name": "MANAME",
+   "type": "String",
+   "meaning": "Conservation Land Name"
+  },
+  {
+   "name": "MAJORMA",
+   "type": "String",
+   "meaning": "Major Managed Area"
+  },
+  {
+   "name": "MATYPE",
+   "type": "String",
+   "meaning": "Managed Area Type"
+  },
+  {
+   "name": "MANAGING_A",
+   "type": "String",
+   "meaning": "Lead Managing Agency"
+  },
+  {
+   "name": "MATYPE2",
+   "type": "String",
+   "meaning": "Managed Area Category"
+  },
+  {
+   "name": "OWNER",
+   "type": "String",
+   "meaning": "Owner"
+  },
+  {
+   "name": "COOWNERS",
+   "type": "String",
+   "meaning": "Co-owners"
+  },
+  {
+   "name": "TOTACRES",
+   "type": "Double",
+   "meaning": "Total Acres"
+  },
+  {
+   "name": "LTF_ACRES",
+   "type": "Double",
+   "meaning": "Less-than-fee Acres"
+  },
+  {
+   "name": "COUNTY",
+   "type": "String",
+   "meaning": "County (name, text)"
+  },
+  {
+   "name": "PROTSTAT",
+   "type": "Double",
+   "meaning": "Protection Status"
+  },
+  {
+   "name": "MANAGER",
+   "type": "String",
+   "meaning": "Manager"
+  },
+  {
+   "name": "MGRINST",
+   "type": "String",
+   "meaning": "Manager Institution"
+  },
+  {
+   "name": "DESCRIPT",
+   "type": "String",
+   "meaning": "Description"
+  },
+  {
+   "name": "COMMENTS",
+   "type": "String",
+   "meaning": "Comments"
+  },
+  {
+   "name": "MGRCITY",
+   "type": "String",
+   "meaning": "Manager City"
+  },
+  {
+   "name": "MGRPHONE",
+   "type": "String",
+   "meaning": "Manager Phone"
+  },
+  {
+   "name": "MANAME_AB",
+   "type": "String",
+   "meaning": "MA Name Abbreviated"
+  },
+  {
+   "name": "MA_WEBSITE",
+   "type": "String",
+   "meaning": "Managing Agency Website"
+  },
+  {
+   "name": "OWNERTYPES",
+   "type": "String",
+   "meaning": "Owner Types"
+  },
+  {
+   "name": "ESMT_HOLD",
+   "type": "String",
+   "meaning": "Easement Holder"
+  },
+  {
+   "name": "DIGBND_SRC",
+   "type": "String",
+   "meaning": "Digital Boundary Source"
+  },
+  {
+   "name": "CITATION",
+   "type": "String",
+   "meaning": "Citation"
+  },
+  {
+   "name": "Shape_Length",
+   "type": "Double",
+   "meaning": "Shape_Length"
+  },
+  {
+   "name": "Shape_Area",
+   "type": "Double",
+   "meaning": "Shape_Area"
+  }
+ ],
+ "place_key": {
+  "column": "Shape",
+  "system": "embedded geometry",
+  "level": "managed-area polygon",
+  "vintage": "",
+  "basis": "metadata: Geometry type Polygon; a text COUNTY name column exists but is not a standard code"
+ },
+ "geometry": {
+  "kind": "embedded",
+  "type": "Polygon",
+  "crs": "EPSG:3087 (NAD_1983_HARN_Florida_GDL_Albers)",
+  "reference": ""
+ },
+ "years_found": "September 2026 release (quarterly updates; process step 2025-12-19)",
+ "not_read": [
+  "sample_rows",
+  "value_coding",
+  "missing_coding"
+ ],
+ "evidence": [
+  "https://www.fnai.org/publications/gis-data",
+  "https://www.fnai.org/shapefiles/flma_meta.htm"
+ ],
+ "notes": "File geodatabase feature class flma_202609; metadata lists 28 fields (Row count 0 in the metadata, no data file downloaded). Use limitation: cite FNAI, as-is."
+}
