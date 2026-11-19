@@ -25,7 +25,18 @@ Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/invent
 
 ## Contribute
 
-Choose what to work on and how much, let Claude do the reading on your own Claude usage (the tokens are your contribution), approve the result. You need Claude Code, Python, the GitHub CLI (`gh`, signed in) and push access to this repo (ask Robert).
+Choose what to work on and how much, let Claude do the reading on your own Claude usage (the tokens are your contribution), approve the result.
+
+**Before you start (once per computer).** You need four things:
+
+| You need | How to get it |
+|---|---|
+| Claude Code | https://claude.com/claude-code |
+| Python 3.9 or later | https://www.python.org/downloads (on Windows, tick "Add python.exe to PATH") |
+| The GitHub CLI, signed in | Windows: `winget install --id GitHub.cli` · macOS: `brew install gh` · Linux: https://cli.github.com. Then `gh auth login` (GitHub.com, HTTPS, yes to authenticating Git, sign in through the browser) |
+| Write access to this repository | Ask Robert (rtmill) to add your GitHub account, then accept the emailed invitation |
+
+To check all of it at once, after cloning: `python scripts/preflight.py`. It says what's missing and the exact command to fix it. `/inventory` runs the same check and stops with those steps if anything is missing.
 
 1. Clone the repo and start Claude Code in it:
    ```bash

@@ -4,6 +4,17 @@ The inventory is crowdsourced: divide and conquer. You take whatever share of th
 
 > **This assumes:** (1) you have Claude Code, the `gh` CLI signed in, and push access to this repo (ask Robert); (2) you add **ledger files**, never edits to the CSVs in `base/` or `build/`; (3) every value you add was read on the publisher's page, its repository record or its metadata record, and that URL is kept as evidence.
 
+## Before you start (once per computer)
+
+| You need | How to get it |
+|---|---|
+| Claude Code | https://claude.com/claude-code |
+| Python 3.9 or later | https://www.python.org/downloads (on Windows, tick "Add python.exe to PATH") |
+| The GitHub CLI, signed in | Windows: `winget install --id GitHub.cli` · macOS: `brew install gh` · Linux: https://cli.github.com. Then `gh auth login` (GitHub.com, HTTPS, yes to authenticating Git, sign in through the browser) |
+| Write access to this repository | Ask Robert (rtmill) to add your GitHub account, then accept the emailed invitation |
+
+To check all of it at once, after cloning: `python scripts/preflight.py`. It says what's missing and the exact command to fix it. `/inventory` runs the same check and stops with those steps if anything is missing.
+
 ## What you do
 
 1. Clone the repo and start Claude Code in it (Sonnet is enough: `/model sonnet`):

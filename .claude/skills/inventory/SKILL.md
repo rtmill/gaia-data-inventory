@@ -9,6 +9,7 @@ You help one person decide **how much work to take**, do it, and leave **one led
 
 ## 1. Start: show the queue, let the user carve
 
+0. **First, every session:** `python scripts/preflight.py`. If it lists anything to do, stop there: show the user its numbered steps exactly as printed (they are written for the user to follow), tell them to do them in a normal terminal and then type `/inventory` again. Don't try to work around a missing or signed-out GitHub CLI, don't install anything yourself, and don't start work that can't be claimed or submitted. Signing in needs a browser, so it can't be automated.
 1. If you don't know the user's GitHub handle, ask (it goes in `by` and the file name). Then, without asking, get current: if the folder is on `main`, `git pull --ff-only`. If it is on a leftover `work/…` branch with nothing uncommitted, `git switch main` first; if there is an unsubmitted ledger file from an earlier session, say so and ask whether to submit or discard it before starting anything new. **Don't create a branch now**: the work is only a new file under `ledger/`, and the branch is made when submitting (section 6). The user never handles branches.
 2. **`/inventory <issue number>`**: the user already has a claim. `python scripts/queue.py --issue <n>` lists its items; go to section 3.
 3. **Otherwise** run `python scripts/queue.py` (read all of its output; don't truncate it) and present it in this order. Plain words throughout; no `basis` text unless asked.
