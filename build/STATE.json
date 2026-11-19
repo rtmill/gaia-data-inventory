@@ -19,7 +19,7 @@
  "queue": {
   "candidate": 269,
   "person-read": 24,
-  "read": 101,
+  "read": 99,
   "schema": 50,
   "settle": 97,
   "successor": 13
@@ -30,6 +30,8 @@
   "listed_unverified": 154,
   "verified": 628,
   "verified_thin": 97,
-  "specified": 15
+  "specified": 15,
+  "recipe_drafted": 0,
+  "in_gaia": 35
  }
 }

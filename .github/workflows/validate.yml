@@ -1,7 +1,7 @@
 name: Validate contribution
 
 # Checks every pull request. A pull request that only adds or changes files under ledger/ and passes is merged
-# automatically, and the inventory is rebuilt. Anything else waits for a maintainer.
+# automatically, its claim is closed, and the inventory is rebuilt. Anything else waits for a maintainer.
 on:
   pull_request:
     branches: [main]
@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
   actions: write
 
 concurrency:
@@ -19,16 +20,27 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
+      # Check out the branch's own tip, not GitHub's merge commit: the overlap check compares what main gained
+      # since the branch started, and on the merge commit that difference is always empty.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Ledger files added by this PR
-        run: python scripts/validate.py --changed --against origin/${{ github.base_ref }}
-      - name: The whole ledger still replays
-        run: python scripts/build.py
+      - name: Self-test of the checks themselves
+        run: python scripts/selftest.py
+      - name: Ledger files added by this PR, and overlap with main
+        run: |
+          git fetch origin "${{ github.base_ref }}"
+          python scripts/validate.py --changed --against "origin/${{ github.base_ref }}"
+      - name: The whole ledger still replays once merged
+        run: |
+          git config user.name ci
+          git config user.email ci@example.invalid
+          git merge --no-edit "origin/${{ github.base_ref }}" || { echo "This branch conflicts with main: update it (git pull origin main) and push again"; exit 1; }
+          python scripts/build.py
       - name: Merge if it is a ledger-only contribution
         if: github.event.pull_request.head.repo.full_name == github.repository
         env:
@@ -41,5 +53,7 @@ jobs:
             echo "$OTHER"
             exit 0
           fi
+          CLAIMS=$(gh pr view "$PR" --json closingIssuesReferences --jq '.closingIssuesReferences[].number')
           gh pr merge "$PR" --squash --delete-branch
+          for n in $CLAIMS; do gh issue close "$n" --comment "Submitted in #$PR. Anything not finished is back in the queue." || true; done
           gh workflow run build.yml --ref main

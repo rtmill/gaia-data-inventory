@@ -101,6 +101,7 @@ CORE = ("chk_license", "chk_unit", "chk_temporal", "chk_access", "chk_join_key",
 SET = ("pass", "warn", "fail", "n.a.")
 live = [r for r in rows if r.get("round") != "2-pilot"]
 touched = Counter(x["id"] for f in files for x in inv.read_records(f) if x.get("id"))
+worked = {(x.get("packet"), x["id"]) for f in files for x in inv.read_records(f) if x.get("id")}   # done once for this kind of work: not offered again
 KINDS = {  # kind: (packet, rows)
     "read": ("b", [r for r in live if r["verify_tier"] == "Bronze" and r.get("url_health") != "blocked"]),
     "settle": ("b", [r for r in live if r["verify_tier"] == "Silver"
@@ -111,11 +112,13 @@ KINDS = {  # kind: (packet, rows)
     "person-read": ("d", [r for r in live if r["verify_tier"] == "Browser needed" or (r["verify_tier"] == "Bronze" and r.get("url_health") == "blocked")]),
 }
 hint = lambda r: " ".join((r.get("browser_pass_note") or r.get(inv.NOTE) or r.get("notes") or "").split())[:200]
-QC = ["kind", "item", "packet", "tier", "title", "publisher", "host", "region", "category", "wg_request", "open_checks", "touched", "hint"]
+QC = ["kind", "item", "packet", "tier", "title", "publisher", "url", "host", "region", "category", "wg_request", "open_checks", "touched", "hint"]
 queue = []
 for kind, (pk, rs) in KINDS.items():
     for r in rs:
-        queue.append({"kind": kind, "item": r["id"], "packet": pk, "tier": r["verify_tier"], "title": r["dataset_name"], "publisher": r["organization"],
+        if (pk, r["id"]) in worked:
+            continue
+        queue.append({"kind": kind, "item": r["id"], "packet": pk, "tier": r["verify_tier"], "title": r["dataset_name"], "publisher": r["organization"], "url": r.get("site_url", ""),
                       "host": host(r.get("site_url")), "region": reg(r), "category": (r.get("categories") or r.get("category") or "Other").split(";")[0].strip(),
                       "wg_request": r.get("wg_request", ""), "open_checks": ";".join(c[4:] for c in CORE if r.get(c, "") not in SET),
                       "touched": str(touched.get(r["id"], 0)), "hint": hint(r)})
@@ -142,7 +145,7 @@ for f in fam:
     seen_ref.add(k)
     fam_open.append(f)
 for f in sorted(fam_open, key=lambda f: int(f["rank"] or 9999)):
-    queue.append({"kind": "candidate", "item": f["doi"], "packet": "e", "tier": "", "title": f["title"], "publisher": f["publisher"],
+    queue.append({"kind": "candidate", "item": f["doi"], "packet": "e", "tier": "", "title": f["title"], "publisher": f["publisher"], "url": f["doi"] if f["doi"].startswith("http") else "https://doi.org/" + f["doi"],
                   "host": f["doi"].split("/")[0], "region": f["region"], "category": f["anchors"].split(";")[0], "wg_request": "",
                   "open_checks": "", "touched": "0", "hint": (f"lead from {f['source']}" if f.get("source") else f"{f['n']} DOI(s) in the family; {f['year']}")})
 put("build/queue.csv", csv_text(queue, QC))
@@ -162,13 +165,16 @@ state = {"asof": asof, "rows": len(rows), "tiers": c, "verified": c["Gold"] + c[
          "ledger_files": len(files), "contributors": contributors, "queue": dict(sorted(ob.items())), "candidates_ruled_out": len(rej)}
 spec = sum(1 for r in live if r["verify_tier"] in ("Gold", "Silver") and r.get("place_key_system") and r.get("columns_found") and (r.get("geometry_found") or r.get("geometry_source")))
 state["funnel"] = {"leads": ob["candidate"], "listed_unverified": c["Bronze"] + c["Browser needed"] + c["Failed"], "verified": c["Gold"] + c["Silver"],
-                   "verified_thin": ob["settle"], "specified": spec}
+                   "verified_thin": ob["settle"], "specified": spec,
+                   "recipe_drafted": len([f for f in os.listdir(os.path.join(inv.ROOT, "recipes")) if f.endswith((".json", ".jsonld"))]) if os.path.isdir(os.path.join(inv.ROOT, "recipes")) else 0,
+                   "in_gaia": sum(1 for r in live if (r.get("in_gaia") or "").strip())}
 put("build/STATE.json", json.dumps(state, indent=1) + "\n")
 block = (f"**As of {asof}:** {state['rows']} datasets assessed, **{state['verified']} verified** (Gold {c['Gold']}, Silver {c['Silver']}), "
          f"Bronze {c['Bronze']}, Browser needed {c['Browser needed']}, Failed {c['Failed']}. {state['file_verified']} file-verified; "
          f"{state['with_schema']} with a schema record; {state['with_key_vintage']} state their place-key vintage.\n\n"
          f"**Where things stand:** {state['funnel']['leads']} leads not yet looked at → {state['funnel']['listed_unverified']} listed but unverified → "
-         f"{state['verified']} verified ({state['funnel']['verified_thin']} of them on thin evidence) → {spec} fully specified (columns, place key and vintage, geometry: what a recipe needs). "
+         f"{state['verified']} verified ({state['funnel']['verified_thin']} of them on thin evidence) → {spec} fully specified → {state['funnel']['recipe_drafted']} with a draft recipe → "
+         f"{state['funnel']['in_gaia']} in the Gaia catalog. "
          f"Open work: {len(queue)} items; see it with `python scripts/queue.py`. **Ledger:** {len(files)} contribution file{'s' if len(files) != 1 else ''}"
          + (f" from {len(contributors)} contributor{'s' if len(contributors) != 1 else ''}." if contributors else "."))
 rp = os.path.join(inv.ROOT, "README.md")

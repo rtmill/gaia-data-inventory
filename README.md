@@ -11,14 +11,25 @@ It is a list of **prospects**, not the Gaia catalog. Only a few of these dataset
 - **Open work is laid out with what it costs and what it produces,** so you can see where your time or tokens do the most and take exactly as much as you want.
 - **What was tried is written down:** each way of finding data, how well it worked, and what's left of it, so the next person continues instead of starting over.
 
-## Where it stands
+## The path a dataset takes
 
-A dataset moves through stages: a **lead** (might be a dataset) → **listed** (in the inventory, not yet checked) → **verified** (licence, years, geography and access confirmed, each with its link) → **fully specified** (columns, place key and its vintage, geometry: what a Gaia loading recipe is written from).
+The end point is a dataset that Gaia can load and join to patient locations. Getting there takes six steps, and the work in this repository is organised around them:
+
+| Stage | What it means | How a dataset gets there |
+|---|---|---|
+| 1. **Lead** | Something that might be a usable dataset: a reference turned up by a search | Someone explores: continues a way of searching, or tries a new one |
+| 2. **Listed** | In the inventory, with a name, publisher and address, but nothing confirmed | A lead is looked at and kept (or ruled out), or someone adds a dataset they know |
+| 3. **Verified** | Still published, with its licence, years, geography and way of access confirmed, each with the link it was read from | Someone reads the publisher's pages |
+| 4. **Fully specified** | Its columns, the column that ties it to a map, which geography and vintage that is, and its geometry are recorded | Someone reads its metadata, or opens a file |
+| 5. **Recipe drafted** | A loading recipe is written in Gaia's recipe format: where to fetch it, how to map it, what each variable is | Someone writes it from the specification. *Not open yet: the working group is settling the recipe format ([gaiaCatalog #44](https://github.com/OHDSI/gaiaCatalog/pull/44))* |
+| 6. **In the Gaia catalog** | The recipe has been tested and merged into [gaiaCatalog](https://github.com/OHDSI/gaiaCatalog); the dataset can be loaded | Gaia's maintainers, outside this repository |
+
+Each kind of work you can take on moves datasets one step along this path. Most datasets are still in the early stages:
 
 <!-- state:start -->
 **As of 2026-11-19:** 805 datasets assessed, **628 verified** (Gold 157, Silver 471), Bronze 105, Browser needed 20, Failed 29. 15 file-verified; 35 with a schema record; 10 state their place-key vintage.
 
-**Where things stand:** 269 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified (columns, place key and vintage, geometry: what a recipe needs). Open work: 554 items; see it with `python scripts/queue.py`. **Ledger:** 5 contribution files from 1 contributor.
+**Where things stand:** 269 leads not yet looked at → 154 listed but unverified → 628 verified (97 of them on thin evidence) → 15 fully specified → 0 with a draft recipe → 35 in the Gaia catalog. Open work: 552 items; see it with `python scripts/queue.py`. **Ledger:** 5 contribution files from 1 contributor.
 <!-- state:end -->
 
 Browse it on the GIS site: **[Data Inventory](https://ohdsi.github.io/GIS/inventory.html)**.
@@ -46,7 +57,7 @@ To check all of it at once, after cloning: `python scripts/preflight.py`. It say
    ```
 2. Type `/inventory` and answer its questions: which kind of work, how much of it, and at the end whether to submit.
 
-That's all you do. Claude shows you the open work and what it costs, reserves the items you pick, does the work, and submits it; the checks, the merge and the rebuild are automatic. Details: [CONTRIBUTING.md](CONTRIBUTING.md). To suggest a dataset without any of this, [open an issue](../../issues/new?template=suggest-dataset.yml).
+That's all you do. Claude shows you the open work and what it costs, reserves the items you pick, does the work, and submits it; the checks, the merge and the rebuild are automatic. Work in progress is saved as you go in the `ledger/` folder of your copy, and nowhere else on your computer, so a session that stops early loses nothing. Details: [CONTRIBUTING.md](CONTRIBUTING.md). To suggest a dataset without any of this, [open an issue](../../issues/new?template=suggest-dataset.yml).
 
 ## How it works
 

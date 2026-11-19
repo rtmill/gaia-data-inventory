@@ -28,6 +28,8 @@ jobs:
         with:
           python-version: "3.11"
       - run: python scripts/build.py
+      - name: Self-test (a maintainer change must not break contributors' checks)
+        run: python scripts/selftest.py
       - name: Commit build/
         run: |
           if [ -n "$(git status --porcelain build README.md)" ]; then

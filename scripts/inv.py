@@ -120,6 +120,11 @@ def apply_file(rows, cols, path, recs=None):
             r = by[i]
             before = r["verify_tier"]
         s = x.get("set", {})
+        if x.get("packet") == "m":            # a maintainer file may introduce a column
+            for k in s:
+                if k not in cols:
+                    cols.append(k)
+                    for rr in rows: rr.setdefault(k, "")
         bad = [k for k in s if k not in cols]
         if bad:
             raise ValueError(f"{step}:{x['_line']}: unknown columns {bad}")

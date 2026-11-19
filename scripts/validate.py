@@ -44,7 +44,12 @@ mine = {os.path.basename(p) for p in paths}
 rows, cols = inv.read_csv(inv.BASE)
 for f in inv.ledger_files():
     if os.path.basename(f) not in mine:
-        inv.apply_file(rows, cols, f)
+        try:
+            inv.apply_file(rows, cols, f)
+        except Exception as e:  # noqa: BLE001
+            print(f"The repository's own ledger does not replay ({os.path.basename(f)}: {e}).\n"
+                  "This is not a problem with your file. Nothing can be checked until a maintainer fixes it: please tell Robert (rtmill).")
+            sys.exit(2)
 IDS = {r["id"]: r for r in rows}
 COLS = set(cols)
 UNITS = {r["term"].strip() for r in inv.read_csv(os.path.join(inv.ROOT, "method", "unit-vocabulary.csv"))[0]}

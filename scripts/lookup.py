@@ -2,7 +2,7 @@
 """Small, token-cheap lookups (run from the repo root). Use these instead of opening the big CSVs.
 
     python scripts/lookup.py "<name, DOI, URL or id>"   top matches in the inventory and the candidate families
-    python scripts/lookup.py --id <id>                  every non-empty field of one row
+    python scripts/lookup.py --id <id>                  the key fields of one row (add --all for every field)
 
 For the work queue (what's open, slices, estimates, claiming) use scripts/queue.py.
 """
@@ -54,9 +54,14 @@ def search(q):
 def one(i):
     for r in load(os.path.join(B, "inventory-all.csv")):
         if r["id"] == i:
+            KEEP = ("id", "dataset_name", "organization", "site_url", "access_url", "verify_tier", "tier_cap", "verification_level", "license_confirmed", "license_class",
+                    "temporal_confirmed", "finest_unit_confirmed", "access_confirmed", "join_key_confirmed", "formats_confirmed", "place_key_system", "place_key_vintage",
+                    "schema_source", "region", "category", "persistent_id", "notes", inv.NOTE)
             for k, v in r.items():
-                if v:
-                    print(f"{k}: {v[:300]}")
+                if v and ("--all" in sys.argv or k in KEEP or (k.startswith("chk_") and not k.endswith(("_detail", "_evidence")))):
+                    print(f"{k}: {v[:200]}")
+            if "--all" not in sys.argv:
+                print("(key fields only; add --all for every field, including each check's detail and evidence)")
             return
     sys.exit(f"no row {i}")
 

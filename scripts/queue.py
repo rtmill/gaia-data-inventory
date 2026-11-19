@@ -20,7 +20,7 @@ import inv  # noqa: E402
 
 load = lambda p: list(csv.DictReader(open(p, encoding="utf-8-sig", newline=""))) if os.path.exists(p) else []
 ITEM = re.compile(r"^- `([a-z-]+)` `(.+?)`", re.M)
-WHAT = {"read": "Bronze rows: read the publisher's page, settle the checks",
+WHAT = {"read": "Datasets not yet verified (some were read before without settling everything): read the publisher's page, settle the checks",
         "settle": "Silver rows with two or fewer of licence, unit, years, access settled",
         "successor": "Failed rows: find where the page moved, or confirm it is retired",
         "schema": "Verified rows: columns, place key and vintage from metadata records",
@@ -130,7 +130,7 @@ elif a.n:
     take = sel[:a.n]
     print(f"{len(take)} of {len(sel)} matching '{kind}' items: {cost(kind, len(take), est)} ({est.get(kind, {}).get('basis', 'no estimate')})")
     for r in take:
-        print(f"  {r['item']}  {r['title'][:80]} | {r['publisher'][:30]} | {r['region']} | {r['category']}" + (f" | open: {r['open_checks']}" if r["open_checks"] else ""))
+        print(f"  {r['item']}  {r['title'][:80]} | {r['publisher'][:30]} | {r['region']} | {r['category']}" + (f" | open: {r['open_checks']}" if r["open_checks"] else "") + f"\n      {r.get('url', '')}")
     if a.claim and take:
         me = gh("api", "user", "--jq", ".login").strip()
         body = (f"**{kind}**: {WHAT[kind]}.\n\nEstimate: {cost(kind, len(take), est)}.\n\n" + "\n".join(f"- `{kind}` `{r['item']}` {r['title'][:90]}" for r in take)
@@ -144,7 +144,8 @@ else:
     c, f = Counter(r["kind"] for r in Q), Counter(r["kind"] for r in sel)
     st = json.load(open(os.path.join(inv.BUILD, "STATE.json"), encoding="utf-8")).get("funnel", {})
     print(f"Stages: {st.get('leads')} leads -> {st.get('listed_unverified')} listed, unverified -> {st.get('verified')} verified "
-          f"({st.get('verified_thin')} on thin evidence) -> {st.get('specified')} fully specified (ready to write a recipe from)")
+          f"({st.get('verified_thin')} on thin evidence) -> {st.get('specified')} fully specified (ready to write a recipe from) "
+          f"-> {st.get('recipe_drafted')} with a draft recipe -> {st.get('in_gaia')} in the Gaia catalog (loadable)")
     print(f"{len(Q)} open items, {len(Q) - len(free)} in someone's claim" + (f"; {len(sel)} match your filters" if filtered else "") + "\n")
     nap = sum(1 for r in load(os.path.join(inv.ROOT, "method", "approaches.csv")) if r["continue_with"].startswith("brief:"))
     print(f"explore: {nap} approaches with work left, or design a new one   moves: nothing -> lead (and often on to listed)\n"
@@ -153,6 +154,12 @@ else:
           f"  why:       The lead pool is finite ({c['candidate']} left); this is where new datasets come from once it is used up\n"
           f"  cost:      Open-ended: you set the budget and Claude sizes the run to it. Past runs added 20 to 26 datasets each\n"
           f"  list them: python scripts/queue.py --approaches")
+    print("a dataset you have in mind: any dataset you name   moves: nothing -> listed (or straight to verified)\n"
+          "  you do:    Give its name, its web address or DOI, or both; Claude finds it, confirms with you that it has the right one, checks whether it is already in, and if not reads its page\n"
+          "  produces:  One new dataset in the inventory with its checks, or an update to the entry that is already there\n"
+          "  why:       You know sources in your field that no search has found\n"
+          "  cost:      roughly 20k tokens (a guess, not measured yet), about 15 min of Claude working. Nothing to reserve: just name it\n"
+          "  check first: python scripts/lookup.py \"<name, DOI or URL>\"")
     for k in [k for k in est if k in WHAT] + [k for k in WHAT if k not in est]:
         if c[k]:
             e = est.get(k, {})
@@ -161,4 +168,10 @@ else:
             print(f"{k}: {f[k]} free of {c[k]}   moves a dataset: {e.get('moves', '')}\n  you do:    {WHAT[k]}\n  produces:  {e.get('produces', '')}\n  why:       {e.get('why', '')}\n"
                   f"  cost:      {cost(k, 1, est)} per item. All {c[k]}: {cost(k, c[k], est)}. {half}\n  basis:     {e.get('basis', '')}"
                   + (f"\n  maintainers suggest this now: {e['suggest']}" if e.get("suggest") else ""))
+    print(f"draft a recipe: NOT OPEN YET ({st.get('specified')} datasets are ready for it)   moves a dataset: fully specified -> recipe drafted\n"
+          "  you do:    Write the dataset's loading recipe in Gaia's recipe format, and note anything that had nowhere to go in the format\n"
+          "  produces:  A draft recipe that a Gaia maintainer can test and add to the catalog: the last step before the data is usable\n"
+          "  why:       This is the end point. Everything above only gets a dataset ready for this\n"
+          "  cost:      not known; measuring it is one reason to do it\n"
+          "  status:    waits for the working group to settle the recipe format (OHDSI/gaiaCatalog #44)")
     print("\nSlice: --by region|category|host|tier|publisher|kind (with any filters). Carve: --kind K [filters] --n N [--claim].")
