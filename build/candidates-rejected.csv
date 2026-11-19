@@ -2,3 +2,6 @@ doi,verdict,reason,by,file
 10.48320/46174381-1660-4354-a3a5-0935f4583dee,restricted,Discuss Data landing page states 'Restricted access' for this facility-locations dataset,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl
 10.6084/m9.figshare.14270734,not_place_data,figshare record holds a paper's figure (jpg) and one small table (xls) for a qualitative case study; no place-keyed data,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl
 10.7281/t1/xz0cgj,blocked,Johns Hopkins data repository sits behind a Cloudflare block page for scripted requests; person-read material,rtmill,2026-11-18-rtmill-candidate-care-sites.jsonl
+10.5281/zenodo.23890261,not_place_data,"xlsx metadata catalogue of 205 variables from 13 source datasets for the continental US; documents other datasets, holds no place-keyed values",rtmill,2026-11-18-rtmill-explore-exposome.jsonl
+10.5281/zenodo.21244099,not_place_data,"a table of exposure-outcome associations taken from the literature (one row per association, with PMID); no place key or geography",rtmill,2026-11-18-rtmill-explore-exposome.jsonl
+10.5281/zenodo.21102837,not_place_data,"one xlsx on adult drinking-water consumption in Flanders (18-96): record has no description, no place key or geography stated",rtmill,2026-11-18-rtmill-explore-exposome.jsonl
