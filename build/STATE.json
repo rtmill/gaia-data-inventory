@@ -10,9 +10,9 @@
  },
  "verified": 645,
  "file_verified": 15,
- "with_schema": 36,
+ "with_schema": 37,
  "with_key_vintage": 10,
- "ledger_files": 11,
+ "ledger_files": 12,
  "contributors": [
   "rtmill"
  ],
@@ -30,7 +30,7 @@
   "listed_unverified": 155,
   "verified": 645,
   "verified_thin": 94,
-  "specified": 16,
+  "specified": 17,
   "recipe_drafted": 0,
   "in_gaia": 35
  }
