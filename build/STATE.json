@@ -1,18 +1,18 @@
 {
  "asof": "2026-11-19",
- "rows": 805,
+ "rows": 823,
  "tiers": {
   "Gold": 157,
-  "Silver": 471,
-  "Bronze": 106,
+  "Silver": 488,
+  "Bronze": 107,
   "Browser needed": 20,
   "Failed": 28
  },
- "verified": 628,
+ "verified": 645,
  "file_verified": 15,
  "with_schema": 36,
  "with_key_vintage": 10,
- "ledger_files": 10,
+ "ledger_files": 11,
  "contributors": [
   "rtmill"
  ],
@@ -21,15 +21,15 @@
   "person-read": 24,
   "read": 99,
   "schema": 49,
-  "settle": 95,
+  "settle": 94,
   "successor": 12
  },
- "candidates_ruled_out": 6,
+ "candidates_ruled_out": 9,
  "funnel": {
   "leads": 270,
-  "listed_unverified": 154,
-  "verified": 628,
-  "verified_thin": 95,
+  "listed_unverified": 155,
+  "verified": 645,
+  "verified_thin": 94,
   "specified": 16,
   "recipe_drafted": 0,
   "in_gaia": 35
